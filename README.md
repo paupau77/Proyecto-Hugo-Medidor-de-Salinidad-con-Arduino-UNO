@@ -391,7 +391,8 @@ En la pantalla se visualiza:
 - ✅ Mide valores analógicos simulados por potenciómetro.  
 - ✅ Muestra datos correctamente en pantalla LCD.  
 - ✅ Permite pausar y reanudar mediciones con botón.  
-- 🕐 A la espera de integración de fórmula profesional para conversión precisa a salinidad.  
+- 🕐 A la espera de integración de fórmula profesional para conversión precisa a salinidad.
+(La conversión a Salinidad usa fórmulas de ejemplo (lineal, cuadrática o cúbica) que, si bien son flexibles, deben ser reemplazadas por una ecuación verificada químicamente.)  
 
 ---
 
