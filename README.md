@@ -112,6 +112,7 @@ Nombrar este proyecto con su nombre es también una forma de reconocer esa inspi
 ![Esquema de conexión](esquema_conexion.png)
 
 *Figura 1: Diagrama de conexión entre Arduino, sensor de conductividad, pantalla y pulsador.
+
 Hecho a mano por mi, sin embargo para las conexiones, remitirse al esquema de Tinkercad, cuya claridad es superior y debe tomarse como referencia principal.*
 
 ---
@@ -587,7 +588,8 @@ Este proyecto también lleva tu huella, porque detrás de cada idea que se concr
 **Con admiración, gratitud y cariño inmenso: gracias, profe.**
 
 
-**Agradecimiento especial a la profe María Paula Gonzalez**
+**Agradecimiento especial a la profe María Paula Gonzalez💛**
+
 Queremos reconocer tu inmenso valor como profesora, pero sobre todo como persona. Gracias por ser súper dulce, profundamente humana y por acompañar cada proceso con el corazón. También te agradecemos la invitación a tu comunidad, un espacio donde el aprendizaje se vuelve encuentro y solidaridad. Este proyecto lleva también tu huella💝.
 
 
