@@ -117,7 +117,8 @@ Su figura estuvo presente como referencia de valores que atraviesan todo el desa
 
 ![Esquema de conexión](esquema_conexion.png)
 
-*Figura 1: Diagrama de conexión entre Arduino, Amplificador Operacional LM358, pantalla y pulsador. Diagrama de conexión actualizado. Se destaca el uso de bus I2C para la pantalla y un filtro RC (Resistencia 1k + Capacitor 100nF) a la salida del LM358 para limpiar la señal antes de ingresar al pin A0 del Arduino.*
+*Figura 1: Diagrama de conexión entre Arduino, Amplificador Operacional LM358, pantalla y pulsador. Diagrama de conexión actualizado. Se destaca el uso de bus I2C para la pantalla y un filtro RC (Resistencia 1k + Capacitor 100nF) a la salida del LM358 para limpiar la señal antes de ingresar al pin A0 del Arduino.
+Hecho a mano por mi, sin embargo para las conexiones, remitirse al esquema que subiré de Tinkercad, cuya claridad es superior y debe tomarse como referencia principal.*
 
 ---
 
