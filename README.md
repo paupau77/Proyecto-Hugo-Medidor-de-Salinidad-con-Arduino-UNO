@@ -118,6 +118,7 @@ Su figura estuvo presente como referencia de valores que atraviesan todo el desa
 ![Esquema de conexión](esquema_conexion.png)
 
 *Figura 1: Diagrama de conexión entre Arduino, Amplificador Operacional LM358, pantalla y pulsador. Diagrama de conexión actualizado. Se destaca el uso de bus I2C para la pantalla y un filtro RC (Resistencia 1k + Capacitor 100nF) a la salida del LM358 para limpiar la señal antes de ingresar al pin A0 del Arduino.
+
 Hecho a mano por mi, sin embargo para las conexiones, remitirse al esquema que subiré de Tinkercad, cuya claridad es superior y debe tomarse como referencia principal.*
 
 ---
@@ -437,6 +438,12 @@ Por todo esto, quiero agradecerte de corazón, profe, por el apoyo, por darle vi
 Este proyecto también lleva tu huella, porque detrás de cada idea que se concreta hay un eco de tu empuje, tu confianza y tu fe en que los estudiantes podemos lograr grandes cosas.  
 
 **Con admiración, gratitud y cariño inmenso: gracias, profe.**
+
+
+**Agradecimiento especial a la profe María Paula Gonzalez💛**
+
+Queremos reconocer tu inmenso valor como profesora, pero sobre todo como persona. Gracias por ser súper dulce, profundamente humana y por acompañar cada proceso con el corazón. También te agradecemos la invitación a tu comunidad, un espacio donde el aprendizaje se vuelve encuentro y solidaridad. Este proyecto lleva también tu huella💝.
+
 
 **💙 Luji**
 
