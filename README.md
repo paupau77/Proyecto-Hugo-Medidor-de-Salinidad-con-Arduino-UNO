@@ -586,6 +586,11 @@ Este proyecto también lleva tu huella, porque detrás de cada idea que se concr
 
 **Con admiración, gratitud y cariño inmenso: gracias, profe.**
 
+
+**Agradecimiento especial a la profe María Paula Gonzalez**
+Queremos reconocer tu inmenso valor como profesora, pero sobre todo como persona. Gracias por ser súper dulce, profundamente humana y por acompañar cada proceso con el corazón. También te agradecemos la invitación a tu comunidad, un espacio donde el aprendizaje se vuelve encuentro y solidaridad. Este proyecto lleva también tu huella💝.
+
+
 **💙 Luji**
 
 Quiero agradecer especialmente a mi amiga **Luji** por el enorme apoyo psicológico que me ha dado a lo largo del desarrollo de este proyecto.
