@@ -124,7 +124,8 @@ Nombrar este proyecto con su nombre es también una forma de reconocer esa inspi
 
 ![Esquema de conexión](esquema_conexion2.png)
 
-*Figura 1: Nuevo diagrama de conexión entre Arduino, sensores, pantalla y pulsador.*
+*Figura 1: Nuevo diagrama de conexión entre Arduino, sensores, pantalla y pulsador.
+Hecho a mano por mi, sin embargo para las conexiones, remitirse al esquema de Tinkercad, cuya claridad es superior y debe tomarse como referencia principal.*
 
 
 ## Evolución del diseño del circuito
