@@ -111,7 +111,8 @@ Nombrar este proyecto con su nombre es también una forma de reconocer esa inspi
 
 ![Esquema de conexión](esquema_conexion.png)
 
-*Figura 1: Diagrama de conexión entre Arduino, sensor de conductividad, pantalla y pulsador.*
+*Figura 1: Diagrama de conexión entre Arduino, sensor de conductividad, pantalla y pulsador.
+Hecho a mano por mi, sin embargo para las conexiones, remitirse al esquema de Tinkercad, cuya claridad es superior y debe tomarse como referencia principal.*
 
 ---
 
