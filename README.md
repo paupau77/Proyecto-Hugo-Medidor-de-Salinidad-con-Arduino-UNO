@@ -694,6 +694,18 @@ Este proyecto también lleva tu huella, porque detrás de cada idea que se concr
 Queremos reconocer tu inmenso valor como profesora, pero sobre todo como persona. Gracias por ser súper dulce, profundamente humana y por acompañar cada proceso con el corazón. También te agradecemos la invitación a tu comunidad, un espacio donde el aprendizaje se vuelve encuentro y solidaridad. Este proyecto lleva también tu huella💝.
 
 
+**Agradecimiento especial al Sr. Ing. Intendente Gabriel Pellizzon💙**
+
+Hay gestos que valen mucho más que una ayuda económica.
+Quiero agradecer profundamente al intendente Gabi Pellizzon por haber donado el dinero para la construcción del primer prototipo de Proyecto Hugo.
+Su aporte no solo significa una inversión en tecnología o en salud. Significa creer en las ideas, en la educación, en la ciencia y en los jóvenes que se animan a soñar con cambiar realidades.
+Cuando comencé este proyecto, muchas veces sentí que no había nada: no había recursos, no había un camino marcado y tampoco certezas. Solo había una idea, mucha voluntad y el deseo de ayudar a otras personas.
+Hoy, gracias al acompañamiento de personas que deciden apostar por estos sueños, siento que hay todo. Hay oportunidades, hay apoyo y hay un mensaje muy valioso para las nuevas generaciones.
+Lo más importante de este gesto es el ejemplo que deja. Los chicos del Club de Ciencias pueden ver que sus ideas importan, que la comunidad puede acompañarlos y que los proyectos que nacen desde la curiosidad, el esfuerzo y la vocación pueden transformarse en algo real.
+Ojalá que este apoyo los inspire a animarse, a investigar, a crear y a perseguir sus propios proyectos. Porque la innovación no empieza cuando tenemos todos los recursos; empieza cuando alguien decide creer.
+Gracias, Gabi, por confiar en Proyecto Hugo y por demostrar que apoyar la ciencia, la educación y la salud es también sembrar futuro💚.
+
+
 **💙 Luji**
 
 Quiero agradecer especialmente a mi amiga **Luji** por el enorme apoyo psicológico que me ha dado a lo largo del desarrollo de este proyecto.
