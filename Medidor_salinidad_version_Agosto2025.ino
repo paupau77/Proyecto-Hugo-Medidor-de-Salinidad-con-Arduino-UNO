@@ -1,27 +1,25 @@
 /*
   Medidor de Salinidad Básico con Arduino UNO
   -------------------------------------------
-  Dispositivo básico para medir la conductividad eléctrica de una muestra líquida 
-  (simulada con un potenciómetro), mostrando en pantalla LCD 16x2 I2C el voltaje, 
-  valor ADC y una estimación simple de la conductividad. 
-  Está preparado para incorporar una fórmula profesional que convierta la 
-  conductividad a salinidad real (g/L, ppt, etc) cuando se disponga.
+  Dispositivo básico para medir la conductividad eléctrica de una muestra líquida
+  (simulada con un potenciómetro), mostrando en pantalla LCD 16x2 I2C el voltaje,
+  conductividad, salinidad y temperatura.
 
   Autora: Paulina Juich
-  Licencia: 
-  Este proyecto fue desarrollado por Paulina Juich y registrado en la DNDA (Argentina) 
+  Licencia:
+  Este proyecto fue desarrollado por Paulina Juich y registrado en la DNDA (Argentina)
   bajo el número de expediente EX-2025-78014687- el 18 de Julio de 2025.
 
-  Todo el contenido de este repositorio (código fuente, diseño electrónico, documentación) 
+  Todo el contenido de este repositorio (código fuente, diseño electrónico, documentación)
   se encuentra protegido por derechos de autor.
 
-  ⚠️ El incumplimiento de estas condiciones podrá derivar en acciones legales 
+  ⚠️ El incumplimiento de estas condiciones podrá derivar en acciones legales
   conforme a la Ley 11.723 de Propiedad Intelectual.
 
   © 2025 Paulina Juich. Todos los derechos reservados.
 
   🧠 El uso personal, académico o educativo sin fines de lucro está permitido con atribución.
-  💰 Cualquier uso comercial, distribución, modificación o integración en productos requiere 
+  💰 Cualquier uso comercial, distribución, modificación o integración en productos requiere
      una licencia paga o autorización expresa.
 
   Contacto para licencias: paulinajuich4@gmail.com
@@ -30,47 +28,55 @@
   - Comentarios detallados en cada bloque
   - Antirrebote optimizado con temporización
   - Preparado para probar fórmulas lineal, cuadrática o cúbica
+  - Sensor LM35 para mostrar temperatura
 */
 
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <math.h>
 
 // Crear el objeto lcd con dirección I2C 0x27 y 16 columnas x 2 filas
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-// Pines
-const int sensorPin = A0;       // Potenciómetro como sensor de salinidad
-const int buttonPin = 2;        // Pulsador conectado a GND con INPUT_PULLUP
+// ================= PINES =================
+const int sensorPin = A0;          // Potenciómetro como sensor de salinidad
+const int pinTemperatura = A1;     // Sensor LM35
+const int buttonPin = 2;           // Pulsador conectado a GND con INPUT_PULLUP
 
-// Configuración de lectura
-float maxConductividad = 50.0;  // Valor máximo calibrado en mS/cm (ajustable según calibración real)
+// ================= CONFIGURACIÓN =================
+float maxConductividad = 50.0;     // Valor máximo calibrado en mS/cm
 
-// Estado del sistema
+// ================= ESTADO =================
 bool medirActivo = true;
 bool botonPresionado = false;
 
-// ⚠️ FÓRMULAS DE CALIBRACIÓN (de ejemplo, se deben reemplazar por datos reales)
-// Fórmula LINEAL: salinidad = a1 * conductividad + b1
+// ================= FÓRMULAS =================
+
+// Fórmula LINEAL
 float a1 = 0.5, b1 = 0.8;
 
-// Fórmula CUADRÁTICA: salinidad = a2 * cond^2 + b2 * cond + c2
+// Fórmula CUADRÁTICA
 float a2 = 0.02, b2 = 0.4, c2 = 0.7;
 
-// Fórmula CÚBICA: salinidad = a3 * cond^3 + b3 * cond^2 + c3 * cond + d3
+// Fórmula CÚBICA
 float a3 = 0.001, b3 = -0.02, c3 = 0.5, d3 = 0.6;
 
-// Selección de fórmula activa: 1 = lineal, 2 = cuadrática, 3 = cúbica
-int tipoFormula = 3;  
+// Selección de fórmula activa
+int tipoFormula = 3;
 
 unsigned long ultimaLectura = 0;
-const unsigned long intervaloLectura = 300; // ms
+const unsigned long intervaloLectura = 300;
+
+//================== SETUP ==================
 
 void setup() {
+
   pinMode(sensorPin, INPUT);
+  pinMode(pinTemperatura, INPUT);
   pinMode(buttonPin, INPUT_PULLUP);
 
-  lcd.init();          // Inicializa LCD
-  lcd.backlight();     // Enciende luz de fondo
+  lcd.init();
+  lcd.backlight();
 
   Serial.begin(9600);
   Serial.println("Iniciando medidor de salinidad...");
@@ -83,82 +89,150 @@ void setup() {
   lcd.clear();
 }
 
+//================== LOOP ==================
+
 void loop() {
+
   leerBoton();
 
-  //  Solo lee cada "intervaloLectura" ms
   if (medirActivo && (millis() - ultimaLectura >= intervaloLectura)) {
-    int adc = analogRead(sensorPin);  // Lee el sensor (0–1023)
-    float voltaje = adc * (5.0 / 1023.0);  // Conversión a voltaje (0–5V)
-    float conductividad = (adc / 1023.0) * maxConductividad; // Escalado a mS/cm
 
-    // --- Cálculo de salinidad según fórmula elegida ---
+    // Lectura conductividad
+    int adc = analogRead(sensorPin);
+
+    // Lectura LM35
+    int adcTemp = analogRead(pinTemperatura);
+
+    // Conversión de conductividad
+    float voltaje = adc * (5.0 / 1023.0);
+    float conductividad = (adc / 1023.0) * maxConductividad;
+
+    // Conversión LM35
+    float voltTemp = adcTemp * (5.0 / 1023.0);
+    float temperatura = voltTemp * 100.0;
+
+    // --------- Salinidad ---------
+
     float salinidad = 0.0;
+
     if (tipoFormula == 1) {
+
       salinidad = a1 * conductividad + b1;
+
     } else if (tipoFormula == 2) {
-      salinidad = a2 * pow(conductividad, 2) + b2 * conductividad + c2;
+
+      salinidad = a2 * pow(conductividad, 2)
+                + b2 * conductividad
+                + c2;
+
     } else if (tipoFormula == 3) {
-      salinidad = a3 * pow(conductividad, 3) + b3 * pow(conductividad, 2) + c3 * conductividad + d3;
+
+      salinidad =
+        a3 * pow(conductividad, 3)
+        + b3 * pow(conductividad, 2)
+        + c3 * conductividad
+        + d3;
     }
 
-    mostrarLectura(adc, voltaje, conductividad, salinidad);
+    mostrarLectura(voltaje, conductividad, salinidad, temperatura);
 
-    // --- Datos también por Serial ---
-    Serial.print("ADC: "); Serial.print(adc);
-    Serial.print("  Voltaje: "); Serial.print(voltaje, 2);
-    Serial.print(" V  Conductividad: "); Serial.print(conductividad, 2);
-    Serial.print(" mS/cm  Salinidad: "); Serial.print(salinidad, 2);
-    Serial.println(" g/L");
+    // --------- Monitor Serial ---------
+
+    Serial.print("Voltaje: ");
+    Serial.print(voltaje, 2);
+
+    Serial.print(" V  Conductividad: ");
+    Serial.print(conductividad, 2);
+
+    Serial.print(" mS/cm  Salinidad: ");
+    Serial.print(salinidad, 2);
+
+    Serial.print(" g/L  Temperatura: ");
+    Serial.print(temperatura, 1);
+
+    Serial.println(" C");
+
     ultimaLectura = millis();
   }
 
-  //  Muestra pantalla de pausa
+  // Pantalla de pausa
+
   if (!medirActivo) {
+
     static bool pausaMostrada = false;
+
     if (!pausaMostrada) {
+
       lcd.clear();
+
       lcd.setCursor(0, 0);
       lcd.print("== PAUSADO ==");
+
       lcd.setCursor(0, 1);
       lcd.print("Presiona boton");
+
       pausaMostrada = true;
     }
+
+  } else {
+
+    static bool pausaMostrada = false;
+    pausaMostrada = false;
+
   }
 }
 
-// --- Antirrebote con cambio de flanco ---
+//================== BOTÓN ==================
+
 void leerBoton() {
+
   static unsigned long lastDebounceTime = 0;
-  static const unsigned long debounceDelay = 50;
+  const unsigned long debounceDelay = 50;
 
   bool estadoBoton = digitalRead(buttonPin) == LOW;
 
-  if (estadoBoton && !botonPresionado && (millis() - lastDebounceTime > debounceDelay)) {
+  if (estadoBoton &&
+      !botonPresionado &&
+      (millis() - lastDebounceTime > debounceDelay)) {
+
     botonPresionado = true;
+
     medirActivo = !medirActivo;
+
     Serial.println(medirActivo ? "MIDIENDO" : "PAUSADO");
+
     lcd.clear();
+
     lastDebounceTime = millis();
   }
 
   if (!estadoBoton && botonPresionado) {
+
     botonPresionado = false;
+
     lastDebounceTime = millis();
   }
 }
 
-// --- Mostrar datos en pantalla ---
-void mostrarLectura(int adc, float voltaje, float cond, float sal) {
+//================== LCD ==================
+
+void mostrarLectura(float voltaje,
+                    float cond,
+                    float sal,
+                    float temp) {
+
   lcd.clear();
+
   lcd.setCursor(0, 0);
-  lcd.print("V:"); lcd.print(voltaje, 1);
-  lcd.print(" C:"); lcd.print(cond, 1);
+  lcd.print("V:");
+  lcd.print(voltaje, 1);
+  lcd.print(" C:");
+  lcd.print(cond, 1);
 
   lcd.setCursor(0, 1);
-  lcd.print("S:"); 
-  lcd.print(sal, 1);   // valor de salinidad
-  lcd.print("g/L ");   // <- aquí agregamos la unidad
-  lcd.print("ADC:");
-  lcd.print(adc);
+  lcd.print("S:");
+  lcd.print(sal, 1);
+
+  lcd.print(" T:");
+  lcd.print(temp, 0);
 }
