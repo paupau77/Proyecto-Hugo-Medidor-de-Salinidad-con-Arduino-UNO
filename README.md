@@ -706,6 +706,16 @@ Ojalá que este apoyo los inspire a animarse, a investigar, a crear y a persegui
 Gracias, Gabi, por confiar en Proyecto Hugo y por demostrar que apoyar la ciencia, la educación y la salud es también sembrar futuro💚.
 
 
+**Agradecimiento especial a Romina Maricel Mayorga 📦💚**
+
+Hay personas que terminan siendo parte de un proyecto mucho más allá de su trabajo. Quiero agradecer de corazón a Romina Maricel Mayorga, la mejor transportista de Mercado Libre y la transportista oficial de Proyecto Hugo. Gracias por cada entrega, por tu compromiso, tu responsabilidad y por acompañar este sueño desde un lugar tan importante. Detrás de cada componente que llegó para construir este proyecto también estuvo tu dedicación. Gracias por hacer que cada paso fuera posible y por demostrar que cuando alguien trabaja con pasión también deja una huella. Proyecto Hugo también avanza gracias a personas como vos.
+
+
+**Agradecimiento especial a Rubén Horacio Campos 💻💙**
+
+Todo gran proyecto necesita personas que estén cuando aparecen los desafíos. Quiero agradecer profundamente a Rubén Horacio Campos, mi mano derecha para el desarrollo y montaje de la web oficial de Proyecto Hugo. Gracias por compartir tu tiempo, tus conocimientos y por acompañarme con paciencia en cada detalle. Transformar una idea en una página que pueda inspirar y llegar a tantas personas no habría sido lo mismo sin tu ayuda. Tu compromiso hizo posible que este proyecto tuviera un espacio donde contar su historia y mostrar su propósito al mundo. Gracias por creer en este sueño y por formar parte de él. Tu trabajo también quedará para siempre en la historia de Proyecto Hugo.
+
+
 **💙 Luji**
 
 Quiero agradecer especialmente a mi amiga **Luji** por el enorme apoyo psicológico que me ha dado a lo largo del desarrollo de este proyecto.
