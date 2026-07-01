@@ -155,6 +155,82 @@ Se agrega medición de temperatura (LM35) y pH para compensación de conductivid
 
 ---
 
+# 🔬 Primer prototipo físico
+
+Luego de validar el funcionamiento del sistema en los simuladores **Tinkercad** y **Wokwi**, comenzó una de las etapas más emocionantes del proyecto: la construcción del **primer prototipo físico de Proyecto Hugo**.
+
+Este prototipo permitió trasladar el diseño desde el entorno virtual hacia hardware real, verificando el correcto funcionamiento del circuito, la interacción entre los distintos componentes y la estabilidad general del sistema.
+
+Estas fotografías documentan uno de los momentos más importantes del desarrollo: el nacimiento del primer dispositivo funcional de Proyecto Hugo.
+
+---
+
+## 📷 Construcción del primer prototipo
+
+<p align="center">
+<img src="imagenes/prototipo1.jpg" width="700">
+</p>
+
+**Figura 4.** Ensamblado y pruebas del primer prototipo físico de Proyecto Hugo sobre protoboard.
+
+---
+
+## 📟 Primeras mediciones
+
+<p align="center">
+<img src="imagenes/prototipo2.jpg" width="450">
+</p>
+
+**Figura 5.** Primeras mediciones realizadas por el sistema, mostrando conductividad y temperatura en la pantalla LCD 16x2 I2C.
+
+---
+
+## ⏸️ Validación del modo pausa
+
+<p align="center">
+<img src="imagenes/prototipo3.jpg" width="450">
+</p>
+
+**Figura 6.** Prueba del sistema de pausa mediante pulsador, verificando el correcto comportamiento de la interfaz del usuario.
+
+---
+
+## ✅ Hitos alcanzados
+
+- Primer prototipo físico completamente ensamblado.
+- Integración exitosa entre Arduino UNO y pantalla LCD 16x2 I2C.
+- Correcta lectura del sensor de conductividad.
+- Implementación funcional del botón de pausa.
+- Validación del software sobre hardware real.
+- Confirmación del funcionamiento fuera de los simuladores.
+- Base sólida para comenzar la etapa de calibración y ensayos experimentales.
+
+---
+
+## 💚 Un paso muy importante
+
+Estas imágenes representan mucho más que un circuito electrónico.
+
+Representan cientos de horas de estudio, aprendizaje, pruebas, errores, correcciones y perseverancia hasta lograr que una idea comenzara a convertirse en un dispositivo real.
+
+Proyecto Hugo deja de existir únicamente en simuladores y pasa a dar su primer paso en el mundo físico, abriendo el camino hacia futuras etapas de investigación, calibración y validación.
+
+---
+
+## 🙏 Agradecimiento especial
+
+Quiero expresar un agradecimiento muy especial al **Profesor Dr. Sergio Daniel Conde**, quien ha acompañado este proyecto con enorme compromiso y dedicación.
+
+Gracias por creer en Proyecto Hugo, por impulsarlo constantemente y por estar realizando todas las gestiones necesarias para que pueda avanzar hacia la **etapa de pruebas** junto a profesionales e instituciones.
+
+Su confianza, su acompañamiento y su calidad humana representan un impulso enorme para seguir creciendo. Más allá del conocimiento académico que comparte día a día, transmite algo aún más valioso: la convicción de que la ciencia, la educación y la innovación pueden cambiar vidas cuando se construyen con compromiso y humanidad.
+
+Este primer prototipo también lleva una parte de su apoyo, porque detrás de cada avance hubo alguien que decidió creer que este sueño podía hacerse realidad.
+
+**Muchas gracias, profe💚.**
+
+---
+
 ## 🧠 Funcionamiento del sistema
 
 El sistema realiza un proceso de medición, compensación y visualización de datos de forma periódica, siguiendo los pasos que se describen a continuación:
