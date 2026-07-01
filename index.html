@@ -1,1500 +1,2427 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
-  <title>Proyecto Hugo – Medidor de Salinidad con Arduino UNO</title>
-  <meta name="description"
-    content="Proyecto Hugo es un dispositivo experimental basado en Arduino UNO para la medición de salinidad, conductividad, temperatura y pH, desarrollado con un profundo sentido humano y compromiso social." />
-  <meta name="google-site-verification" content="tPnP9JX6DRbq2On-AZC42SEQ6UeZF6wbJZSvPeIJoy8" />
+  <title>Proyecto Hugo — Medidor de Salinidad con Arduino UNO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Proyecto Hugo: dispositivo experimental basado en Arduino UNO para medir salinidad, conductividad, temperatura y pH, pensado para acompañar a personas con problemas renales.">
+  <meta name="google-site-verification" content="tPnP9JX6DRbq2On-AZC42SEQ6UeZF6wbJZSvPeIJoy8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
   <style>
-:root {
-  --rosa: #ffe3f2;
-  --rosa-strong: #e85d8f;
-  --aqua: #d2f4f5;
-  --aqua-strong: #14b8b6;
-  --turquesa: #0aa3a3;
-  --gris: #465363;
-  --bg: #f7fafc;
-  --borde-rosa: #e85d8f;
-  --borde-aqua: #14b8b6;
-  --verde: #e6f7f1;
-  --borde-verde: #2bbf9b;
-}
-html, body {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-body {
-  font-family: "Segoe UI", system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--gris);
-  margin: 0;
-  min-height: 100vh;
-}
-.circuit-background {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: white;
-  overflow: hidden;
-}
-
-.circuit-svg {
-  width: 100%;
-  height: 100%;
-  opacity: 0.3;
-}
-
-.circuit-svg path,
-.circuit-svg circle {
-  fill: white;
-  stroke: #94a3b8; /* slate-400 */
-  stroke-width: 1.5;
-  stroke-linecap: round;
-}
-
-.circuit-svg circle {
-  fill: white;
-}
-
-.circuit-gradient {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at center,
-    transparent 0%,
-    rgba(255,255,255,0.5) 60%,
-    white 100%
-  );
-}
-nav {
-  background: #fff;
-  box-shadow: 0 1px 8px 0 #0001;
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-.navbar-content {
-  max-width: 900px;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5em 1em;
-  min-height: 56px;
-}
-.menu-title {
-  display: flex;
-  align-items: center;
-  gap: .5em;
-}
-.menu-title svg {
-  color: var(--aqua-strong);
-}
-.navbar-links {
-  overflow: hidden;
-  display: flex;
-  gap: 0.4em;
-  flex-wrap: nowrap;
-}
-.navbar-links button {
-  padding: 0.4em 0.6em;
-  font-size: 0.9em;
-  white-space: nowrap;
-  border: none;
-  background: none;
-  border-radius: 999px;
-  font-weight: 600;
-  color: var(--gris);
-  cursor: pointer;
-  transition: background 0.17s;
-  display: flex;
-  align-items: center;
-  gap: .5em;
-}
-.navbar-links button.active {
-  background: var(--verde);
-  color: var(--aqua-strong);
-  box-shadow: 0 1px 6px 0 #2bbf9b11;
-}
-.navbar-links button:hover {
-  background: #eee;
-}
-@media (max-width: 680px) {
-  .navbar-content {
-    flex-direction: column;
-    gap: 0.7em;
-    padding: 0.7em 0.3em;
-  }
-  .navbar-links button {
-    padding: 0.6em 0.8em;
-    font-size: 0.97em;
-  }
-}
-main, .section {
-  max-width: 900px;
-  margin: auto;
-  padding: 1.5rem 1rem 0 1rem;
-}
-h1, h2 {
-  color: var(--turquesa);
-  font-weight: 800;
-  letter-spacing: -1px;
-}
-h1 {
-  font-size: 2.1rem;
-  margin-bottom: 0.3rem;
-  text-align: center;
-}
-h2 {
-  margin-top: 2rem;
-  border-left: 6px solid var(--borde-rosa);
-  padding-left: 0.6rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 0.7em;
-}
-p, ul, li {
-  font-size: 1.06rem;
-  line-height: 1.7;
-  list-style-type: none;
-}
-a {
-  color: var(--rosa-strong);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color .16s;
-}
-a:hover {
-  color: var(--aqua-strong);
-  text-decoration: underline;
-}
-ul {
-  padding-left: 1.2rem;
-}
-li {
-  margin-bottom: 0.4rem;
-}
-main, header, section, footer {
-  position: relative;
-  z-index: 1;
-}
-.quote {
-            font-style: italic;
-            border-left: 4px solid #10b981;
-            padding-left: 20px;
-            margin: 20px 0;
-            color: #0aa3a3;
-            background: rgba(16, 185, 129, 0.1);
-            padding: 15px;
-            border-radius: 0 8px 8px 0;
-}
-
- /* Estilos de Botones (Links) – Rosa Pastel */
-a.btn {
-    display: inline-block;
-    background: linear-gradient(135deg, #f9a8d4 0%, #f472b6 100%);
-    color: #ffffff;
-    padding: 10px 20px;
-    margin: 5px;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-    box-shadow: 0 4px 6px rgba(244, 114, 182, 0.35);
-    transition: all 0.3s ease;
-    border: 1px solid #fbcfe8;
-}
-
-a.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(244, 114, 182, 0.45);
-    background: linear-gradient(135deg, #fbcfe8 0%, #f9a8d4 100%);
-}
-
-.box-pink {
-  background: var(--rosa);
-  border-left: 5px solid var(--borde-rosa);
-  padding: 1.2em 1.2em;
-  margin: 1.6em 0;
-  border-radius: 14px;
-  box-shadow: 0 2px 12px 0 rgba(232, 93, 143, 0.06);
-}
-.box-green {
-  background: var(--verde);
-  border-left: 5px solid var(--borde-verde);
-  padding: 1.2em 1.2em;
-  margin: 1.6em 0;
-  border-radius: 14px;
-  box-shadow: 0 2px 12px 0 rgba(232, 93, 143, 0.06);
-}
-.box-blue, .box-aqua {
-  background: var(--aqua);
-  border-left: 5px solid var(--borde-aqua);
-  padding: 1.2em 1.2em;
-  margin: 1.6em 0;
-  border-radius: 14px;
-  color: #165353;
-  box-shadow: 0 2px 12px 0 rgba(20, 184, 182, 0.06);
-}
-.footer {
-  background: var(--aqua-strong);
-  color: #fff;
-  text-align: center;
-  padding: 2rem 1rem;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  font-size: 1.3rem;
-  line-height: 1.4;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  margin-top: 2.5em;
-  box-shadow: 0 -2px 18px 0 rgba(20, 184, 182, 0.08);
-}
-@media (max-width: 680px) {
-  main, .section {
-    padding: 1.2em 0.3em 0 0.3em;
-  }
-  .footer {
-    font-size: 1rem;
-    padding: 1.5rem 0.5em;
-  }
-}
-.card-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2em;
-}
-@media (max-width: 800px) {
-  .card-grid {
-    grid-template-columns: 1fr;
-    gap: 1em;
-  }
-}
-.card {
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 2px 12px 0 #0001;
-  padding: 1.1em 1.1em;
-  display: flex;
-  align-items: flex-start;
-  gap: 1em;
-  transition: box-shadow .2s;
-}
-.card:hover {
-  box-shadow: 0 4px 18px 0 #14b8b633;
-}
-.card svg {
-  flex-shrink: 0;
-}
-.section {
-  display: none;
-}
-.section.active {
-  display: block;
-}
-.author-card {
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 2px 12px 0 #0001;
-  padding: 1.1em 1.1em;
-  text-align: center;
-  margin-bottom: 1.5em;
-}
-.italic { font-style: italic; }
-.font-bold { font-weight: bold; }
-.font-green { color: var(--aqua-strong);}
-.font-pink { color: var(--rosa-strong);}
-.font-blue { color: var(--turquesa);}
-  .email-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
+    /* ============================================================
+   PROYECTO HUGO — DESIGN SYSTEM v4.0 "Latido"
+   Moderno / vibrante — teal vital + coral humano + ámbar potasio
+   ============================================================ */
+    :root {
+      --teal: #0F9D8C;
+      --teal-glow: #34E0C4;
+      --coral: #FF6F91;
+      --coral-deep: #E84F77;
+      --amber: #FFB648;
+      --navy: #0A1628;
+      --navy-soft: #0F2238;
+      --mist: #F4FAF9;
+      --ink: #0B1220;
+      --slate: #4B5A6A;
+      --slate-soft: #7C8B9A;
+      --card: #FFFFFF;
+      --line: rgba(11, 18, 32, 0.08);
+      --radius: 20px;
+      --radius-sm: 12px;
+      --ease: cubic-bezier(.22, 1, .36, 1);
+      --shadow-card: 0 18px 40px -16px rgba(10, 22, 40, 0.16);
+      --shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 30px 80px -20px rgba(15, 157, 140, 0.45);
     }
-    .envelope-static {
-      background: #3bb273;
-      border: none;
-      border-radius: 50%;
-      width: 64px;
-      height: 64px;
+
+    [data-theme="dark"] {
+      --mist: #0B1422;
+      --card: #101D30;
+      --ink: #EAF3F1;
+      --slate: #C7D4DD;
+      --slate-soft: #8FA0AE;
+      --line: rgba(255, 255, 255, 0.08);
+      --shadow-card: 0 18px 40px -16px rgba(0, 0, 0, 0.5);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--mist);
+      color: var(--ink);
+      transition: background .4s var(--ease), color .4s var(--ease);
+      overflow-x: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    .font-display {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    img,
+    svg {
+      display: block;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--teal-glow);
+      background: rgba(52, 224, 196, 0.1);
+      border: 1px solid rgba(52, 224, 196, 0.25);
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+
+    section {
+      padding: 100px 0;
+    }
+
+    @media (max-width:720px) {
+      section {
+        padding: 64px 0;
+      }
+    }
+
+    /* ---------- NAV ---------- */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(244, 250, 249, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      transition: background .4s var(--ease);
+    }
+
+    [data-theme="dark"] nav {
+      background: rgba(11, 20, 34, 0.82);
+    }
+
+    .nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--teal) 0%, var(--teal-glow) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(59, 178, 115, 0.08);
-      position: relative;
-      margin-bottom: 0.2rem;
+      box-shadow: 0 6px 16px rgba(15, 157, 140, .35);
     }
-    .envelope-static svg {
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .nav-links a {
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--slate);
+      text-decoration: none;
+      padding: 9px 13px;
+      border-radius: 10px;
+      transition: all .25s var(--ease);
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover {
+      background: rgba(15, 157, 140, 0.1);
+      color: var(--teal);
+    }
+
+    .nav-links a.is-active {
+      background: rgba(15, 157, 140, 0.12);
+      color: var(--teal);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--slate);
+      transition: all .25s var(--ease);
+      font-size: 1rem;
+    }
+
+    .icon-btn:hover {
+      background: rgba(15, 157, 140, .1);
+      color: var(--teal);
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--teal) 0%, var(--teal-glow) 100%);
+      color: #06231f;
+      font-weight: 700;
+      font-size: .88rem;
+      padding: 10px 18px;
+      border-radius: 11px;
+      text-decoration: none;
+      box-shadow: 0 10px 24px -6px rgba(15, 157, 140, .5);
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+
+    .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px -6px rgba(15, 157, 140, .6);
+    }
+
+    .cta.ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .cta.ghost:hover {
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width:880px) {
+      .nav-links {
+        display: none;
+      }
+    }
+
+    /* ---------- HERO ---------- */
+    .hero {
+      position: relative;
+      background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(52, 224, 196, 0.18), transparent 60%), var(--navy);
+      color: #EAF6F4;
+      padding: 88px 0 110px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, black 10%, transparent 75%);
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    @media (max-width:920px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 4.6vw, 3.5rem);
+      line-height: 1.06;
+      letter-spacing: -.02em;
+      margin: 18px 0 20px;
+      font-weight: 700;
+    }
+
+    .hero h1 .accent {
+      background: linear-gradient(120deg, var(--teal-glow), var(--coral) 90%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p.lead {
+      font-size: 1.08rem;
+      line-height: 1.65;
+      color: #AFC4C2;
+      max-width: 520px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 28px;
+      margin-top: 46px;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta div {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .hero-meta b {
+      display: block;
+      font-size: 1.5rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .hero-meta span {
+      font-size: .74rem;
+      color: #7E9591;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    /* ---------- INSTRUMENT PANEL (signature element) ---------- */
+    .panel {
+      position: relative;
+      background: linear-gradient(160deg, #102A3A 0%, #0B1F2C 100%);
+      border-radius: 26px;
+      padding: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .panel-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .panel-top .dot-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .panel-top .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2a3f4d;
+    }
+
+    .panel-top .dot.live {
+      background: var(--coral);
+      box-shadow: 0 0 8px var(--coral);
+      animation: pulse-dot 1.4s infinite;
+    }
+
+    .panel-top .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .66rem;
+      letter-spacing: .08em;
+      color: #5F8A86;
+      text-transform: uppercase;
+    }
+
+    .lcd {
+      background: linear-gradient(160deg, #1c2f23, #172a1f);
+      border: 6px solid #0d1814;
+      border-radius: 10px;
+      padding: 18px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lcd::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 60%);
+    }
+
+    .lcd-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      color: #9be8c9;
+      font-size: .92rem;
+      padding: 4px 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .lcd-row.big {
+      font-size: 1.6rem;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(155, 232, 201, 0.15);
+      padding-bottom: 10px;
+      margin-bottom: 6px;
+    }
+
+    .lcd-row .lbl {
+      color: #5F9D87;
+      font-size: .7rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      align-self: center;
+    }
+
+    .wave-wrap {
+      margin-top: 16px;
+      height: 64px;
+    }
+
+    .wave-wrap svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .wave-line {
+      fill: none;
+      stroke: var(--coral);
+      stroke-width: 2;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 6px rgba(255, 111, 145, .6));
+    }
+
+    .panel-foot {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      color: #6F8C88;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .3;
+      }
+    }
+
+    /* ---------- SECTION HEADERS ---------- */
+    .sec-head {
+      max-width: 680px;
+      margin: 0 auto 52px;
+      text-align: center;
+    }
+
+    .sec-head h2 {
+      font-size: clamp(1.7rem, 3vw, 2.3rem);
+      margin: 14px 0 10px;
+      letter-spacing: -.01em;
+    }
+
+    .sec-head p {
+      color: var(--slate);
+      font-size: 1.02rem;
+      line-height: 1.6;
+    }
+
+    /* ---------- CARDS GRID ---------- */
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width:900px) {
+      .grid3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width:600px) {
+      .grid3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-card);
+      transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-card .ic {
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.04rem;
+      margin: 0 0 8px;
+      font-weight: 600;
+    }
+
+    .feature-card p {
+      font-size: .92rem;
+      color: var(--slate);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* tints for icon chips */
+    .ic.t1 {
+      background: rgba(15, 157, 140, .12);
+      color: var(--teal);
+    }
+
+    .ic.t2 {
+      background: rgba(255, 111, 145, .12);
+      color: var(--coral-deep);
+    }
+
+    .ic.t3 {
+      background: rgba(255, 182, 72, .15);
+      color: #B97A12;
+    }
+
+    .ic.t4 {
+      background: rgba(99, 102, 241, .12);
+      color: #6366F1;
+    }
+
+    /* ---------- DISCLAIMER / HUMAN BOX ---------- */
+    .notice {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: rgba(255, 111, 145, .07);
+      border: 1px solid rgba(255, 111, 145, .25);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      margin: 28px 0;
+    }
+
+    .notice b {
+      color: var(--coral-deep);
+    }
+
+    .notice p {
+      margin: 0;
+      font-size: .92rem;
+      color: var(--slate);
+      line-height: 1.5;
+    }
+
+    /* ---------- STORY TEASER ---------- */
+    .story-card {
+      position: relative;
+      border-radius: 28px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #102A3A 0%, #1B3D34 60%, #0A1628 100%);
+      color: #EAF3F1;
+      padding: 56px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    @media (max-width:780px) {
+      .story-card {
+        grid-template-columns: 1fr;
+        padding: 36px 24px;
+      }
+    }
+
+    .story-card h2 {
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      margin: 14px 0 16px;
+    }
+
+    .story-card p {
+      color: #B9CFC9;
+      line-height: 1.65;
+      font-size: 1rem;
+    }
+
+    .story-quote {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      font-style: italic;
+      border-left: 3px solid var(--coral);
+      padding-left: 18px;
+      color: #fff;
+    }
+
+    .heart-pulse {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      margin: 0 auto;
+      background: radial-gradient(circle, rgba(255, 111, 145, .25), transparent 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .heart-pulse svg {
+      width: 54px;
+      height: 54px;
+      color: var(--coral);
+      animation: beat 1.6s infinite;
+    }
+
+    @keyframes beat {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      25% {
+        transform: scale(1.12);
+      }
+
+      40% {
+        transform: scale(.96);
+      }
+    }
+
+    /* ---------- VERSIONS ---------- */
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width:760px) {
+      .grid2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .version-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 30px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .version-card .badge {
+      display: inline-flex;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 5px 11px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    .badge.base {
+      background: rgba(15, 157, 140, .12);
+      color: var(--teal);
+    }
+
+    .badge.adv {
+      background: rgba(255, 182, 72, .18);
+      color: #B97A12;
+    }
+
+    .badge.new {
+      background: rgba(255, 111, 145, .15);
+      color: var(--coral-deep);
+    }
+
+    .version-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.25rem;
+    }
+
+    .version-card ul {
+      margin: 14px 0 22px;
+      padding-left: 18px;
+      color: var(--slate);
+      font-size: .92rem;
+      line-height: 1.6;
+    }
+
+    .version-card a.go {
+      font-weight: 700;
+      font-size: .9rem;
+      color: var(--teal);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .version-card a.go:hover {
+      gap: 10px;
+      transition: gap .2s var(--ease);
+    }
+
+    .version-card.potassium {
+      background: linear-gradient(135deg, #1c1404, #241a05);
+      color: #FCEFD2;
+      border: 1px solid rgba(255, 182, 72, .3);
+    }
+
+    .version-card.potassium h3,
+    .version-card.potassium a.go {
+      color: #FFD896;
+    }
+
+    .version-card.potassium p {
+      color: #D9C29C;
+    }
+
+    /* ---------- AUTHOR ---------- */
+    .author-wrap {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 32px;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: var(--shadow-card);
+    }
+
+    @media (max-width:680px) {
+      .author-wrap {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+    }
+
+    .avatar-ring {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--teal), var(--coral));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0 auto;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .author-wrap h3 {
+      margin: 0 0 4px;
+      font-size: 1.3rem;
+    }
+
+    .author-wrap .role {
+      color: var(--slate);
+      font-size: .92rem;
+      margin-bottom: 14px;
+    }
+
+    .author-wrap .contact {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem;
+      background: rgba(15, 157, 140, .08);
+      border: 1px solid rgba(15, 157, 140, .2);
+      padding: 8px 14px;
+      border-radius: 10px;
+      color: var(--teal);
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer {
+      background: var(--navy);
+      color: #9FB6B2;
+      padding: 54px 0 30px;
+      margin-top: 40px;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-links a {
+      font-size: .88rem;
+      color: #CFE3DF;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-links a:hover {
+      color: var(--teal-glow);
+    }
+
+    footer .fine {
+      font-size: .76rem;
+      color: #5E7975;
+      max-width: 560px;
+      line-height: 1.6;
+    }
+
+    /* ---------- HEARTS ---------- */
+    #hearts-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    .floating-heart {
+      position: absolute;
+      bottom: -40px;
+      color: var(--coral);
+      opacity: .35;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(.5);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: .5;
+      }
+
+      90% {
+        opacity: .2;
+      }
+
+      100% {
+        transform: translateY(-115vh) scale(1.1);
+        opacity: 0;
+      }
+    }
+
+    /* ---------- POTASSIUM TRIGGER ---------- */
+    .k-trigger {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 300;
+      background: linear-gradient(135deg, #FFB648, #E8902A);
+      color: #3a2400;
+      border: none;
+      border-radius: 999px;
+      padding: 13px 18px;
+      font-weight: 700;
+      font-size: .82rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 12px 28px -6px rgba(255, 182, 72, .6);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .k-trigger .ring {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3a2400;
+      animation: pulse-dot 1.4s infinite;
+    }
+
+    /* ---------- INSTAGRAM SIDEBAR ---------- */
+    .insta-trigger {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      z-index: 300;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 26px -6px rgba(238, 42, 123, .5);
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 12, 20, .55);
+      backdrop-filter: blur(2px);
+      z-index: 399;
+      opacity: 0;
+      visibility: hidden;
+      transition: all .3s var(--ease);
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .insta-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: 340px;
+      max-width: 90vw;
+      background: var(--card);
+      z-index: 400;
+      transform: translateX(100%);
+      transition: transform .35s var(--ease);
+      box-shadow: -20px 0 60px rgba(0, 0, 0, .2);
+      overflow-y: auto;
+    }
+
+    .insta-sidebar.active {
+      transform: translateX(0);
+    }
+
+    /* utility */
+    .center {
+      text-align: center;
+    }
+
+    .mt8 {
+      margin-top: 8px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: .001s !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    /* ============================================================
+   BLOQUE ORIGINAL — SOLAPA POTASIO + SIDEBAR INSTAGRAM
+   Copiado tal cual del diseño original, sin modificar.
+   ============================================================ */
+    .open-insta-btn {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 6px 20px rgba(220, 39, 67, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .open-insta-btn:hover {
+      transform: scale(1.1) rotate(-5deg);
+      box-shadow: 0 10px 30px rgba(220, 39, 67, 0.5);
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      z-index: 1000;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    .insta-sidebar {
+      position: fixed;
+      top: 0;
+      right: -380px;
+      width: 360px;
+      height: 100%;
+      background: #f8fafc;
+      z-index: 1001;
+      box-shadow: -8px 0 40px rgba(0, 0, 0, 0.12);
+      transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .insta-sidebar.active {
+      right: 0;
+    }
+
+    [data-theme="dark"] .insta-sidebar {
+      background: #1e293b;
+    }
+
+    @keyframes blob-float {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -50px) scale(1.1);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.9);
+      }
+    }
+
+    .animate-blob {
+      animation: blob-float 7s infinite alternate;
+    }
+
+    .insta-glow-effect {
+      position: absolute;
+      inset: -4px;
+      background: linear-gradient(135deg, #ec4899, #a855f7, #f97316);
+      border-radius: 1rem;
+      filter: blur(10px);
+      opacity: 0.2;
+      transition: opacity 0.5s;
+    }
+
+    .insta-card-wrapper:hover .insta-glow-effect {
+      opacity: 0.6;
+    }
+
+    /* ---- Carrusel estilo story (nuevo) ---- */
+    .insta-carousel {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      border-radius: 1rem;
+      overflow: hidden;
+      background: #0f172a;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.18);
+    }
+
+    .insta-carousel .story-bars {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      z-index: 5;
+      display: flex;
+      gap: 5px;
+    }
+
+    .insta-carousel .story-bar {
+      flex: 1;
+      height: 3px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      overflow: hidden;
+    }
+
+    .insta-carousel .story-bar i {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: #fff;
+      border-radius: 3px;
+    }
+
+    .insta-carousel .story-bar.done i {
+      width: 100%;
+      transition: none;
+    }
+
+    .insta-carousel .story-bar.active i {
+      width: 0%;
+      animation: storyFill 4s linear forwards;
+    }
+
+    @keyframes storyFill {
+      from {
+        width: 0%;
+      }
+
+      to {
+        width: 100%;
+      }
+    }
+
+    .insta-carousel .story-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .insta-carousel .story-slide.active {
+      opacity: 1;
+    }
+
+    .insta-carousel .story-slide.active img {
+      animation: storyZoomIn 4.2s ease-out both;
+    }
+
+    .insta-carousel .story-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @keyframes storyZoomIn {
+      0% {
+        transform: scale(1.06);
+        filter: brightness(1.9) saturate(0.6);
+      }
+
+      35% {
+        filter: brightness(1.05) saturate(1.05);
+      }
+
+      100% {
+        transform: scale(1);
+        filter: brightness(1) saturate(1);
+      }
+    }
+
+    /* ---- Destello (flash) al entrar cada foto ---- */
+    .insta-carousel .story-flash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 65%);
+      pointer-events: none;
+      opacity: 0;
+      z-index: 6;
+      mix-blend-mode: screen;
+    }
+
+    .insta-carousel .story-slide.active .story-flash {
+      animation: storyFlash 0.65s ease-out both;
+    }
+
+    @keyframes storyFlash {
+      0% {
+        opacity: 0.95;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .insta-carousel .sparkle-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 7;
+      overflow: hidden;
+    }
+
+    .insta-carousel .sparkle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+      color: #fff;
+      filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
+      animation: sparklePop 0.9s ease-out both;
+    }
+
+    .insta-carousel .sparkle svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    @keyframes sparklePop {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+      }
+
+      35% {
+        opacity: 1;
+        transform: scale(1.15) rotate(60deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(0.4) rotate(140deg);
+      }
+    }
+
+    .insta-carousel .story-gradient {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 40%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+      pointer-events: none;
+    }
+
+    .insta-carousel .story-tag {
+      position: absolute;
+      left: 14px;
+      bottom: 12px;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .insta-carousel .story-nav {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      z-index: 4;
+      cursor: pointer;
+    }
+
+    .insta-carousel .story-nav.prev {
+      left: 0;
+    }
+
+    .insta-carousel .story-nav.next {
+      right: 0;
+    }
+
+    [data-theme="dark"] .insta-carousel {
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (max-width: 680px) {
+      .insta-sidebar {
+        width: 100%;
+        right: -100%;
+      }
+    }
+
+    /* ===================================================
+   SOLAPA POTASIO — TECH AESTHETIC (original)
+   =================================================== */
+    :root {
+      --k-gold: #ffc107;
+      --k-orange: #ff9800;
+      --k-dark: #2c1e05;
+    }
+
+    .solapa-tech-trigger {
+      position: fixed;
+      left: 24px;
+      bottom: 32px;
+      z-index: 1500;
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 10px 25px -5px rgba(255, 193, 7, 0.5), 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      overflow: visible;
+      padding: 0;
+    }
+
+    .solapa-tech-trigger:hover {
+      transform: translateY(-4px) scale(1.05);
+      background: #fff;
+      box-shadow: 0 20px 40px -5px rgba(255, 193, 7, 0.6);
+    }
+
+    .trigger-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .emoji-main {
+      font-style: italic;
+      color: #bfa048;
+      font-size: 0.5rem;
+      z-index: 2;
+      position: relative;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      border: 2px solid var(--k-gold);
+      opacity: 0;
+      animation: pulse-tech 2.5s infinite;
+    }
+
+    .pulse-ring.delay {
+      animation-delay: 0.8s;
+    }
+
+    @keyframes pulse-tech {
+      0% {
+        width: 100%;
+        height: 100%;
+        opacity: 0.6;
+      }
+
+      100% {
+        width: 180%;
+        height: 180%;
+        opacity: 0;
+      }
+    }
+
+    .panel-tech-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 420px;
+      max-width: 90vw;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      z-index: 2000;
+      transform: translateX(-105%);
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      box-shadow: 20px 0 60px rgba(0, 0, 0, 0.15);
+      font-family: 'Inter', sans-serif;
+      border-right: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .panel-tech-overlay.panel-abierto {
+      transform: translateX(0);
+    }
+
+    .pcb-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.08;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 20px 20px, #000 2px, transparent 2.5px),
+        linear-gradient(to right, #000 1px, transparent 1px),
+        linear-gradient(to bottom, #000 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+    }
+
+    .panel-container {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .btn-close-tech {
+      position: absolute;
+      top: 24px;
+      right: 24px;
       width: 36px;
       height: 36px;
-      stroke: #fff;
-      stroke-width: 2;
-      fill: none;
-      transform: rotate(-14deg) scale(1.06);
-      transition: none;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.04);
+      border: none;
+      color: #666;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      z-index: 20;
     }
-    .email-address {
-      background: #fff;
-      color: #3bb273;
-      border-radius: 1rem;
-      padding: 0.7rem 1.2rem;
-      box-shadow: 0 4px 16px rgba(59, 178, 115, 0.10);
-      font-size: 1.1rem;
-      font-weight: 600;
-      user-select: all;
-      border: 1px solid #b6e2d3;
+
+    .btn-close-tech:hover {
+      background: rgba(0, 0, 0, 0.1);
+      color: #000;
+      transform: rotate(90deg);
+    }
+
+    .panel-scroll-content {
+      overflow-y: auto;
+      padding: 40px 36px;
+      height: 100%;
+    }
+
+    .header-section {
+      margin-bottom: 30px;
+    }
+
+    .chip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #bfa048;
+      background: #fffbf0;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tech-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--k-dark);
+      line-height: 1.1;
+      margin: 0 0 15px 0;
+      letter-spacing: -0.03em;
+    }
+
+    .highlight-text {
+      background: linear-gradient(120deg, var(--k-gold) 0%, var(--k-orange) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .circuit-line {
+      height: 2px;
+      width: 80px;
+      background: linear-gradient(90deg, var(--k-gold), transparent);
       position: relative;
-      z-index: 1;
-      opacity: 1;
-      transform: none;
-      pointer-events: auto;
-      transition: none;
     }
-  a.btn {
-                display: block;
-                margin: 10px 0;
-                text-align: center;
-            }
-/* --- FINAL DEL STYLE --- */
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  margin: 0;
-}
 
-.main-wrapper {
-  flex: 1 0 auto;
-}
+    .circuit-line::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: -2px;
+      width: 6px;
+      height: 6px;
+      background: var(--k-gold);
+      border-radius: 50%;
+    }
 
-.footer {
-  flex-shrink: 0;
-  margin-top: 2.5em;
-}
+    .text-content {
+      color: #555;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
 
-/* Estilo para el logo circular con corazón */
-.logo-heart-circle {
-  width: 32px;
-  height: 32px;
-  
-  /* Antes era azul al final (#3b82f6), ahora es verde esmeralda (#10b981) */
-  background: linear-gradient(135deg, #2dd4bf 0%, #10b981 100%); 
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  /* Ajustamos también un poco la sombra para que sea verdosa */
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
-}
+    .intro-text {
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 25px;
+    }
 
-/* Alineación del logo con el texto */
-.menu-title {
-  display: flex;
-  align-items: center;
-  gap: 12px; /* Espacio entre el círculo y el nombre */
-}
-/* --- EFECTO DE CORAZONES VOLADORES --- */
-#hearts-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  /* El z-index debe ser mayor al del fondo pero menor al de las tarjetas */
-  z-index: 9999; 
-  overflow: hidden;
-  display: block !important;
-}
+    .card-tech {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      padding: 24px;
+      margin: 25px 0;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
 
-.floating-heart {
-  position: absolute;
-  bottom: -50px;
-  /* Cambiamos a un rosa más fuerte para probar si se ve */
-  color: #ffb6c1; 
-  opacity: 0.6;
-  fill: currentColor;
-  animation: floatUp linear infinite;
-}
+    .card-decoration {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--k-gold);
+    }
 
+    .emoji-float {
+      float: right;
+      font-size: 1.8rem;
+      margin-left: 10px;
+    }
 
-@keyframes floatUp {
-  0% { transform: translateY(0) scale(0.5); opacity: 0; }
-  10% { opacity: 0.8; }
-  90% { opacity: 0.4; }
-  100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
-}
+    .tech-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
 
-/* --- ESTILOS DE LA SOLAPA DE INSTAGRAM --- */
-.open-insta-btn {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 55px;
-  height: 55px;
-  cursor: pointer;
-  z-index: 1000;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-}
+    .tech-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
 
-.insta-sidebar {
-  position: fixed;
-  top: 0;
-  right: -350px; /* Escondida */
-  width: 300px;
-  height: 100%;
-  background: white;
-  z-index: 1001;
-  box-shadow: -5px 0 25px rgba(0,0,0,0.1);
-  transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  display: flex;
-  flex-direction: column;
-  padding: 30px;
-}
+    .list-icon {
+      font-size: 1.2rem;
+      line-height: 1.4;
+    }
 
-.insta-sidebar.active { right: 0; } /* Se muestra */
+    .quote-box {
+      margin: 30px 0;
+      padding: 20px;
+      background: #fffbf0;
+      border-radius: 0 16px 16px 16px;
+      font-style: italic;
+      color: #8d6e1f;
+      position: relative;
+    }
 
-.sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(2px);
-  display: none;
-  z-index: 1000;
-}
+    .quote-box::before {
+      content: '"';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 3rem;
+      color: rgba(255, 193, 7, 0.2);
+      font-family: serif;
+      line-height: 0;
+    }
 
-.sidebar-overlay.active { display: block; }
+    .action-area {
+      margin-top: 30px;
+      width: 100%;
+    }
 
-/* Animación de las burbujas de fondo */
-@keyframes blob-float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-}
+    .btn-action-github {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 16px 20px;
+      margin: 0;
+      background: #1a1a1a;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
 
-.animate-blob {
-  animation: blob-float 7s infinite alternate;
-}
+    .btn-action-github:hover {
+      background: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      color: #fff;
+      text-decoration: none;
+    }
 
-/* El resplandor de la tarjeta de Instagram */
-.insta-glow-effect {
-  position: absolute;
-  inset: -4px;
-  background: linear-gradient(to right, #ec4899, #a855f7, #f97316);
-  border-radius: 1rem;
-  filter: blur(8px);
-  opacity: 0.25;
-  transition: opacity 0.5s;
-}
+    .footer-signature {
+      text-align: center;
+      margin-top: 40px;
+      opacity: 0.6;
+    }
 
-.insta-card-wrapper:hover .insta-glow-effect {
-  opacity: 0.75;
-}
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
 
-/* Contenedor principal de la solapa con fondo Slate 50 */
-.insta-sidebar {
-  background-color: #f8fafc !important; /* Slate 50 */
-  overflow-y: auto;
-  overflow-x: hidden;
-}
+    @media (max-width: 480px) {
+      .panel-tech-overlay {
+        width: 100%;
+        height: 85vh;
+        top: auto;
+        bottom: 0;
+        border-radius: 24px 24px 0 0;
+        transform: translateY(110%);
+        border-right: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.5);
+      }
 
+      .panel-tech-overlay.panel-abierto {
+        transform: translateY(0);
+      }
 
-/* ===============================
-   RESPONSIVE NAVBAR – UNA SOLA LÍNEA
-   =============================== */
-
-/* 📱 Tablets y mobile */
-@media (max-width: 768px) {
-  .navbar-content {
-    padding: 0.4em 0.4em;
-  }
-
-  .menu-title span {
-    font-size: 1.15em;
-  }
-
-  .navbar-links {
-    gap: 0.15em;              /* menos espacio entre botones */
-  }
-
-  .navbar-links button {
-    font-size: 0.78em;
-    padding: 0.32em 0.45em;
-    gap: 0.3em;
-  }
-
-  .navbar-links svg {
-    width: 16px;
-    height: 16px;
-  }
-}
-
-/* 📱 Mobile chico */
-@media (max-width: 480px) {
-  .navbar-links button {
-    font-size: 0.72em;
-    padding: 0.28em 0.4em;
-  }
-}
-
-/* 📱 Ultra chico (iPhone SE, Android viejos) */
-@media (max-width: 360px) {
-  .navbar-links {
-    transform: scale(0.97);   /* 🔥 truco PRO */
-    transform-origin: center;
-  }
-}
+      .solapa-tech-trigger {
+        left: 20px;
+        bottom: 20px;
+        width: 56px;
+        height: 56px;
+      }
+    }
   </style>
 </head>
+
 <body>
-<div id="hearts-container"></div>
+  <div id="hearts-container"></div>
 
-<!-- Fondo electrónico / circuito -->
-<div class="circuit-background">
-  <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" class="circuit-svg">
-    <defs>
-      <pattern id="circuit-pattern" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
-
-        <!-- Traces -->
-        <path d="M20 20 H 60 V 50 H 90" />
-        <circle cx="20" cy="20" r="3" />
-        <circle cx="90" cy="50" r="3" />
-
-        <path d="M180 180 H 140 V 150 H 110" />
-        <circle cx="180" cy="180" r="3" />
-
-        <path d="M10 190 V 150 L 40 120 H 80" />
-        <circle cx="10" cy="190" r="3" />
-        <circle cx="80" cy="120" r="3" />
-
-        <path d="M190 10 V 50 L 160 80 H 120" />
-        <circle cx="190" cy="10" r="3" />
-
-        <path d="M100 10 V 30" />
-        <circle cx="100" cy="30" r="2" />
-
-        <path d="M100 190 V 170" />
-        <circle cx="100" cy="170" r="2" />
-
-      </pattern>
-    </defs>
-
-    <rect width="100%" height="100%" fill="url(#circuit-pattern)" />
-  </svg>
-
-  <!-- Gradiente suave -->
-  <div class="circuit-gradient"></div>
-</div>
-  <!-- Navbar -->
+  <!-- NAV -->
   <nav>
-    <div class="navbar-content">
-      <div class="menu-title">
-  <div class="logo-heart-circle">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-    </svg>
-  </div>
-  
-  <span class="font-bold font-green" style="font-size:1.4em;">Proyecto Hugo</span>
-</div>
-
-      <div class="navbar-links">
-        <button class="active" data-section="inicio">
-          <!-- Home icon (Remix Icon: ri-home-heart-line) -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFC8DD" stroke-width="1.6">
-            <path d="M3 12L12 4l9 8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M5 10v10a1 1 0 0 0 1 1h4v-4h4v4h4a1 1 0 0 0 1-1V10" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M15.5 13.5c-.66-1.6-2.84-1.6-3.5 0-.36.86.1 1.76 1.27 2.72.38.33.84.7 1.23 1.1.39-.4.85-.77 1.23-1.1 1.17-.96 1.63-1.86 1.27-2.72z" fill="#e85d8f" stroke="none"/>
+    <div class="nav-inner">
+      <a href="./" class="brand">
+        <span class="brand-mark">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#062821">
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
           </svg>
-          Inicio
-        </button>
-        <button data-section="componentes">
-          <!-- CPU icon (Remix Icon: ri-cpu-line) -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14b8b6" stroke-width="1.6">
-            <rect x="6" y="6" width="12" height="12" rx="2"/>
-            <rect x="10" y="10" width="4" height="4" rx="1"/>
-            <path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/>
-          </svg>
-          Componentes
-        </button>
-        <button data-section="vision">
-          <!-- Star target icon (Remix Icon: ri-focus-3-line) -->
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-icon lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
-          Visión
-        </button>
-        <button data-section="autora">
-          <!-- User heart icon (Remix Icon: ri-user-heart-line) -->
-<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFC8DD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-pen-icon lucide-user-round-pen"><path d="M2 21a8 8 0 0 1 10.821-7.487"/><path d="M21.378 16.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/><circle cx="10" cy="8" r="5"/></svg>
-          Autora
-        </button>
+        </span>
+        Proyecto Hugo
+      </a>
+      <div class="nav-links">
+        <a href="#inicio" class="is-active">Inicio</a>
+        <a href="#funciona">Cómo funciona</a>
+        <a href="#vision">Por qué importa</a>
+        <a href="./historia/">Historia</a>
+        <a href="#versiones">Versiones</a>
+        <a href="./Monitor/">Monitor</a>
+      </div>
+      <div class="nav-actions">
+        <button class="icon-btn" id="darkModeToggle" aria-label="Cambiar tema">🌙</button>
+        <a href="./Monitor/" class="cta">Ver monitor en vivo</a>
       </div>
     </div>
   </nav>
-<div class="main-wrapper">
-  <!-- INICIO -->
-  <main class="section active" id="section-inicio">
-    <h1>Proyecto Hugo💚</h1>
-    <p>
-      Este proyecto es un <strong>medidor de salinidad experimental</strong> basado en Arduino UNO,
-      orientado a aplicaciones educativas, científicas y de prototipado.
-    </p>
-    <p>
-      Sigue una lógica similar a la utilizada en equipos reales de instrumentación analítica:
-      adquisición de datos crudos, compensaciones físicas y cálculo de salinidad mediante
-      modelos matemáticos seleccionables.
-    </p>
-    <p>
-      Incluye visualización en pantalla LCD 16x2 I2C y OLED, múltiples sensores
-      (conductividad, temperatura y pH), y una arquitectura modular, documentada y abierta
-      a mejoras.
-    </p>
-    <div class="box-pink">
-      <strong>
-        Este proyecto no constituye un dispositivo médico ni realiza diagnósticos clínicos.
-      </strong>
+
+  <!-- HERO -->
+  <header class="hero" id="inicio">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">⚡ Arduino UNO · Prototipo de salud renal</span>
+        <h1>Medir con amor.<br><span class="accent">Cuidar con datos.</span></h1>
+        <p class="lead">
+          Proyecto Hugo es un medidor experimental de salinidad, conductividad, temperatura y pH,
+          construido con un Arduino UNO y pensado para acompañar a personas con problemas renales —
+          no como instrumento médico, sino como un gesto de cuidado hecho circuito.
+        </p>
+        <div class="hero-ctas">
+          <a href="./Monitor/" class="cta">Ver el Monitor en vivo →</a>
+          <a href="./historia/" class="cta ghost">Conocer la historia</a>
+        </div>
+        <div class="hero-meta">
+          <div><b>4</b><span>Sensores integrados</span></div>
+          <div><b>3</b><span>Modelos matemáticos</span></div>
+          <div><b>K⁺</b><span>Próximo: potasio</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-top">
+          <span class="tag">Arduino UNO · Output</span>
+          <div class="dot-row">
+            <div class="dot live"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+        <div class="lcd">
+          <div class="lcd-row big"><span class="lbl">Salinidad</span><span id="hero-sal">1.84 g/L</span></div>
+          <div class="lcd-row"><span class="lbl">Temp</span><span id="hero-temp">24.3 °C</span></div>
+          <div class="lcd-row"><span class="lbl">pH</span><span id="hero-ph">7.02</span></div>
+        </div>
+        <div class="wave-wrap">
+          <svg viewBox="0 0 300 60" preserveAspectRatio="none">
+            <polyline class="wave-line" id="heartline"
+              points="0,30 30,30 40,10 50,50 60,30 90,30 110,30 120,15 130,45 140,30 170,30 190,30 200,8 210,50 220,30 300,30" />
+          </svg>
+        </div>
+        <div class="panel-foot">
+          <span>// medición no clínica</span>
+          <span class="mono" id="clock">--:--:--</span>
+        </div>
+      </div>
     </div>
-    <div class="box-green">
-      <strong>
-        Este proyecto está dedicado en memoria de <span class="font-bold font-blue">Hugo Passucci</span>,
-        una de las dos inspiraciones humanas de este proyecto.
-        <br /><br />
-        Su figura estuvo presente como referencia de valores que atraviesan todo el desarrollo del dispositivo: el cuidado, la voluntad, la búsqueda de ayudar a los demás y el compromiso con lo humano detrás de lo técnico.
-        <br /><br />
-        Nombrar este proyecto con su nombre es también una forma de reconocer esa inspiración que me ha dado y de darle continuidad a la huella que dejó.
-      </strong>
+  </header>
+
+  <!-- INTRO -->
+  <section class="wrap">
+    <div class="sec-head" style="margin-bottom:30px;">
+      <span class="eyebrow">El proyecto</span>
+      <h2>Un instrumento de laboratorio, hecho en casa</h2>
+      <p>
+        Sigue la lógica de equipos reales de instrumentación analítica: adquisición de datos crudos,
+        compensaciones físicas y cálculo de salinidad mediante modelos matemáticos seleccionables.
+        Incluye visualización en LCD 16x2 I2C y OLED, múltiples sensores, y una arquitectura modular,
+        documentada y abierta a mejoras.
+      </p>
     </div>
-    <p>
-      Este proyecto fue creado con mucho ❤️ para ayudar en monitoreo de salud, química, biología, etc.
-    </p>
- <a href="./Monitor/" class="btn">💚Monitor en vivo</a>
-    <h2>Versiones disponibles</h2>
-    <ul>
-      <li>
-        <a href="./main/" class="btn">📘 Rama main — versión base</a>
-      </li>
-      <li>
-        <a href="./VersionAgosto2025/" class="btn">🧪 Rama VersionAgosto2025 — versión experimental avanzada</a>
-      </li>
-      <li>
-<a href="https://github.com/paupau77/Proyecto-Hugo-Medidor-de-Salinidad-con-Arduino-UNO/tree/ProyectoHugoMedidorPotasio" 
-   target="_blank" 
-   style="text-decoration: none;">
-  <button style="
-    width: 100%; 
-    margin-top: 12px;
-    padding: 14px; 
-    background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); 
-    color: #422006; 
-    border: none; 
-    border-radius: 12px; 
-    font-weight: 800; 
-    font-family: 'Outfit', sans-serif; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 8px;
-    box-shadow: 0 4px 15px rgba(184, 134, 11, 0.3);
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  "
-  onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(184, 134, 11, 0.5)';"
-  onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(184, 134, 11, 0.3)';"
-  >
-    <span>✨ NUEVO: Medidor de POTASIO ✨</span>
-  </button>
-</a>
-</li>
-    </ul>
-    <h2>Enfoque</h2>
-    <p>
-      Proyecto desarrollado con un profundo sentido humano y compromiso social,
-      pensado para aprendizaje, divulgación científica y exploración tecnológica
-      en áreas como salud, química y biología.
-    </p>
-        <p>
-      Este proyecto no nació en un laboratorio. Nació en mi <span style="color: #FF8FAB;">corazón</span>.
-      <br /><br />
-      No surgió de la técnica ni de la lógica, sino de un sentimiento <span style="color: #FF8FAB;">profundo</span>, de esos que te atraviesan el alma y te mueven a crear desde el corazón. Pensé este dispositivo para quien fue el amor de mi vida, Agus Nicolás. Para ese chico que, un día, me hizo sentir que el amor no sabe de discapacidad, que alguien podría amarme a mí, aun con mis piernas lisiadas, amarme por mi corazón y mi alma. Decía que me amaba más allá de todo… y yo le creí. Y amarlo a él fue un acto <span style="color: #FF8FAB;">inmenso</span>, <span style="color: #FF8FAB;">real</span>, <span style="color: #FF8FAB;">tierno</span> y <span style="color: #FF8FAB;">leal</span>. Lo amé con todo. Con mi corazón, con mi cuerpo, con mi alma, con mis ganas de cuidarlo como nadie.
-      <br /><br />
-      Un día me habló de su abuelo Hugo, que tenía un solo riñón. hablando del tema, pensé que él también podría tener uno de sus riñones jodidos, también pensaba que él podría, al igual que su abuelo tener un solo riñón. No quería que nada le pase al amor de mi vida. Y el miedo me apretó el pecho, como si su dolor pudiera ser mío. Estaba llena de miedo, pensé que su vida podría estar en juego, que podría morir, quería ayudar, quería mejorar su salud y su calidad de vida, yo me preocupaba, quería cuidarlo. No sabía si era cierto, pero igual quise protegerlo. Su historia, su cuerpo, su herencia, todo lo que lo formaba, me importaba, lo amaba, hasta el día de hoy aún lo amo y en mi corazón él tiene su espacio. Lo miré como quien ama la vida en otro cuerpo. Y entonces, algo nació: la necesidad de ayudar, de crear algo que lo pudiera cuidar.
-      <br /><br />
-      Así fue como, con cables, ideas, y amor, creé este pequeño dispositivo. Solo un dispositivo, un código, solo un circuito, sí. Pero también un acto de amor. Un intento de cuidar, de acompañar, de ayudar. Por él. Por su abuelo. Por quienes lo necesiten.
-     <br /><br />
-      No sé si alguna vez entenderá que este proyecto nació por y para él. Pero yo sí lo sé. Y eso, para mí, es <span style="color: #FF8FAB;">sagrado</span>. Con esto, mi amor queda por siempre plasmado. Y además estoy feliz también, de a la gente, poder haber ayudado.💖
-    </p>
-    <br /><br />
-       <div class="quote">
-                💖Porque a veces el amor también se expresa con circuitos, con sensores, con pantallas, con datos… Y con un alma que solo quiere hacer el bien.💖
-            </div>
-      <br /><br />
-    <p>
-      Proyecto completo:
-      <br />
-      <a href="https://github.com/paupau77/Proyecto-Hugo-Arduino-Dispositivo-mi-Medidor-de-Salinidad-con-Arduino-UNO" class="btn">
-        GitHub — Proyecto Hugo💚
-      </a>
-    </p>
-  </main>
+    <div class="notice">
+      <b>⚠️</b>
+      <p><b>Este proyecto no constituye un dispositivo médico ni realiza diagnósticos clínicos.</b> Es un prototipo
+        experimental con fines educativos, científicos y de divulgación.</p>
+    </div>
+  </section>
 
   <!-- COMPONENTES -->
-  <section class="section" id="section-componentes">
-    <h2 style="font-size:2em;text-align:center;color:#e85d8f;">⚡ Detalles Electrónicos del Proyecto</h2>
-    <p style="text-align:center; color:#475569; margin-bottom:2em;">
-      Estos son los componentes clave que hacen posible el <span class="font-bold font-blue">Medidor de Salinidad</span>:
-    </p>
-    <div class="card-grid">
-      <div class="card">
-        <!-- Arduino UNO icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#14b8b6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu-icon lucide-cpu"><path d="M12 20v2"/><path d="M12 2v2"/><path d="M17 20v2"/><path d="M17 2v2"/><path d="M2 12h2"/><path d="M2 17h2"/><path d="M2 7h2"/><path d="M20 12h2"/><path d="M20 17h2"/><path d="M20 7h2"/><path d="M7 20v2"/><path d="M7 2v2"/><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Arduino UNO</h3>
-          <p>Microcontrolador central que procesa los datos de los sensores y realiza los cálculos de salinidad.</p>
-        </div>
-      </div>
-      <div class="card">
-        <!-- Droplets icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8ECAE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets-icon lucide-droplets"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Sensor de Conductividad</h3>
-          <p>Detecta la cantidad de sales disueltas en el agua mediante la medición de la conductividad eléctrica.</p>
-        </div>
-      </div>
-      <div class="card">
-        <!-- Thermometer icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thermometer-icon lucide-thermometer"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Sensor de Temperatura</h3>
-          <p>Mide la temperatura del agua para compensar y ajustar el cálculo de salinidad.</p>
-        </div>
-      </div>
-      <div class="card">
-        <!-- pH icon (test tube) -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-test-tube-icon lucide-test-tube"><path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5c-1.4 0-2.5-1.1-2.5-2.5V2"/><path d="M8.5 2h7"/><path d="M14.5 16h-5"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Sensor de pH</h3>
-          <p>Permite medir la acidez o alcalinidad del líquido analizado.</p>
-        </div>
-      </div>
-      <div class="card">
-        <!-- Monitor icon -->
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#a21caf" stroke-width="2">
-          <rect x="3" y="4" width="18" height="14" rx="2"/>
-          <rect x="8" y="20" width="8" height="2" rx="1"/>
-        </svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Pantalla LCD 16x2 I2C</h3>
-          <p>Muestra los valores de salinidad, temperatura y pH en tiempo real.</p>
-        </div>
-      </div>
-      <div class="card">
-        <!-- GitBranch icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFB703" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-git-fork-icon lucide-git-fork"><circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"/><path d="M12 12v3"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Arquitectura Modular</h3>
-          <p>Permite agregar o quitar sensores fácilmente para experimentar y mejorar el dispositivo.</p>
-        </div>
-      </div>
+  <section class="wrap" id="funciona">
+    <div class="sec-head">
+      <span class="eyebrow">Hardware</span>
+      <h2>Cómo funciona el dispositivo</h2>
+      <p>Los componentes clave que hacen posible la medición.</p>
     </div>
-    <div style="margin-top:2em;text-align:center;">
-      <span class="italic" style="color:#64748b;">
-        💖“A veces el amor también se expresa con circuitos, sensores, pantallas y datos…”💖
-      </span>
+    <div class="grid3">
+      <div class="feature-card">
+        <div class="ic t1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+            <rect x="8" y="8" width="8" height="8" rx="1" />
+          </svg></div>
+        <h3>Arduino UNO</h3>
+        <p>Microcontrolador central que procesa los datos de los sensores y realiza los cálculos de salinidad.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic t1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path
+              d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z" />
+            <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97" />
+          </svg></div>
+        <h3>Sensor de conductividad</h3>
+        <p>Detecta la cantidad de sales disueltas en el agua mediante la medición de la conductividad eléctrica.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic t2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z" />
+          </svg></div>
+        <h3>Sensor de temperatura</h3>
+        <p>Mide la temperatura del agua para compensar y ajustar el cálculo de salinidad.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic t3"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5c-1.4 0-2.5-1.1-2.5-2.5V2" />
+            <path d="M8.5 2h7" />
+            <path d="M14.5 16h-5" />
+          </svg></div>
+        <h3>Sensor de pH</h3>
+        <p>Permite medir la acidez o alcalinidad del líquido analizado.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic t4"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <rect x="3" y="4" width="18" height="14" rx="2" />
+            <rect x="8" y="20" width="8" height="2" rx="1" />
+          </svg></div>
+        <h3>Pantalla LCD / OLED</h3>
+        <p>Muestra los valores de salinidad, temperatura y pH en tiempo real.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic t1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <circle cx="12" cy="18" r="3" />
+            <circle cx="6" cy="6" r="3" />
+            <circle cx="18" cy="6" r="3" />
+            <path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9" />
+            <path d="M12 12v3" />
+          </svg></div>
+        <h3>Arquitectura modular</h3>
+        <p>Permite agregar o quitar sensores fácilmente para experimentar y mejorar el dispositivo.</p>
+      </div>
     </div>
   </section>
 
   <!-- VISION -->
-  <section class="section" id="section-vision">
-    <h2 style="font-size:2em;text-align:center;color:##0aa3a3;">🌟 ¿Por qué este medidor de salinidad marca la diferencia?</h2>
-    <p style="text-align:center; color:#475569; margin-bottom:2em;">
-      Estas son las razones que hacen que mi dispositivo tenga valor real y humano:
-    </p>
-    <div class="card-grid">
-      <div class="card">
-        <!-- Globe icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe-icon lucide-globe"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Democratiza la medición</h3>
-          <p>Usa <span class="font-bold">componentes accesibles y económicos</span>, permitiendo que cualquier persona (bioquímico, paciente renal, deportista, estudiante o docente) pueda medir la conductividad de una muestra y acceder a la ciencia.</p>
-        </div>
+  <section class="wrap" id="vision">
+    <div class="sec-head">
+      <span class="eyebrow">Por qué importa</span>
+      <h2>Valor real, más allá del circuito</h2>
+      <p>Las razones que hacen que este dispositivo tenga sentido humano y científico.</p>
+    </div>
+    <div class="grid3">
+      <div class="feature-card">
+        <div class="ic t1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M2 12h20" />
+          </svg></div>
+        <h3>Democratiza la medición</h3>
+        <p>Componentes accesibles y económicos: cualquier persona puede acceder a una medición de conductividad.</p>
       </div>
-      <div class="card">
-        <!-- Flask icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-microscope-icon lucide-microscope"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Base para investigación científica</h3>
-          <p>Herramienta práctica para <span class="font-bold">proyectos de investigación en biología, química o medicina</span>, incluso en zonas con pocos recursos. Útil para el <span class="font-bold">monitoreo de salud</span> (sudor/orina) donde la salinidad es clave.</p>
-        </div>
+      <div class="feature-card">
+        <div class="ic t2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M6 18h8" />
+            <path d="M3 22h18" />
+            <path d="M14 22a7 7 0 1 0 0-14h-1" />
+          </svg></div>
+        <h3>Base para investigación</h3>
+        <p>Herramienta práctica para proyectos de biología, química o medicina, incluso con pocos recursos.</p>
       </div>
-      <div class="card">
-        <!-- Wrench icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wrench-icon lucide-wrench"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Diseño modular y ampliable</h3>
-          <p><span class="font-bold">Código y estructura listos para crecer:</span> futura fórmula profesional, alertas LED y nuevas funciones. ¡Tu proyecto evoluciona contigo!</p>
-        </div>
+      <div class="feature-card">
+        <div class="ic t3"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path
+              d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.1-3.1c.3-.3.86-.2.98.2a6 6 0 0 1-8.26 7.06l-7.91 7.91a1 1 0 0 1-3-3l7.91-7.91a6 6 0 0 1 7.06-8.26c.44.12.54.66.22.98z" />
+          </svg></div>
+        <h3>Diseño ampliable</h3>
+        <p>Código y estructura listos para crecer: nuevas fórmulas, alertas y sensores.</p>
       </div>
-      <div class="card">
-        <!-- Search icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Respeta la lógica científica</h3>
-          <p><span class="font-bold">Resultados precisos y coherentes</span>. Permite calibración profesional, sin inventar datos ni sobreinterpretar. <span class="italic">La ciencia primero.</span></p>
-        </div>
+      <div class="feature-card">
+        <div class="ic t4"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.34-4.34" />
+          </svg></div>
+        <h3>Respeta la lógica científica</h3>
+        <p>Resultados coherentes y calibración profesional, sin inventar ni sobreinterpretar datos.</p>
       </div>
-      <div class="card">
-        <!-- Lightbulb icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lightbulb-icon lucide-lightbulb"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Tecnología al servicio del conocimiento</h3>
-          <p>Creado para <span class="font-bold">resolver problemas reales</span>: monitoreo de salud, hidratación en deportistas, cambios en muestras biológicas.</p>
-        </div>
+      <div class="feature-card">
+        <div class="ic t2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path
+              d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+            <path d="M9 18h6" />
+          </svg></div>
+        <h3>Tecnología con propósito</h3>
+        <p>Pensado para resolver problemas reales: monitoreo de salud, hidratación, muestras biológicas.</p>
       </div>
-      <div class="card">
-   <!-- HeartHandshake icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-handshake-icon lucide-heart-handshake"><path d="M19.414 14.414C21 12.828 22 11.5 22 9.5a5.5 5.5 0 0 0-9.591-3.676.6.6 0 0 1-.818.001A5.5 5.5 0 0 0 2 9.5c0 2.3 1.5 4 3 5.5l5.535 5.362a2 2 0 0 0 2.879.052 2.12 2.12 0 0 0-.004-3 2.124 2.124 0 1 0 3-3 2.124 2.124 0 0 0 3.004 0 2 2 0 0 0 0-2.828l-1.881-1.882a2.41 2.41 0 0 0-3.409 0l-1.71 1.71a2 2 0 0 1-2.828 0 2 2 0 0 1 0-2.828l2.823-2.762"/></svg>
-        <div>
-          <h3 class="font-bold" style="color:#334155;">Hecho con dedicación y visión</h3>
-          <p>Proyecto auténtico, documentado y preparado para el futuro. Un ejemplo de <span class="font-bold">pensamiento crítico</span> y ganas de ayudar, más allá de los recursos.</p>
-        </div>
+      <div class="feature-card">
+        <div class="ic t1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path
+              d="M19.4 14.4C21 12.8 22 11.5 22 9.5a5.5 5.5 0 0 0-9.6-3.7.6.6 0 0 1-.8 0A5.5 5.5 0 0 0 2 9.5c0 2.3 1.5 4 3 5.5l5.5 5.4a2 2 0 0 0 2.9.1" />
+          </svg></div>
+        <h3>Hecho con dedicación</h3>
+        <p>Un proyecto auténtico, documentado y preparado para el futuro.</p>
       </div>
     </div>
-    <div style="margin-top:2em;text-align:center;">
-      <span class="italic" style="color:#64748b;">
-        “Avanti todos los profesionales de la informática que tenemos ganas de ayudar.” 💖
-      </span>
+  </section>
+
+  <!-- HISTORIA TEASER -->
+  <section class="wrap">
+    <div class="story-card">
+      <div>
+        <span class="eyebrow">El origen</span>
+        <h2>No nació en un laboratorio.<br>Nació en un corazón.</h2>
+        <p>Proyecto Hugo está dedicado a la memoria de Hugo Passucci e inspirado en el amor a Agus Nicolás —
+          la historia real de miedo, cuidado y amor que dio origen a este dispositivo.</p>
+        <p class="story-quote">"A veces cuidar también es crear. Y medir también es amar."</p>
+        <div style="margin-top:28px;">
+          <a href="./historia/" class="cta">Leer la historia completa →</a>
+        </div>
+      </div>
+      <div class="heart-pulse">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- VERSIONES -->
+  <section class="wrap" id="versiones">
+    <div class="sec-head">
+      <span class="eyebrow">Código</span>
+      <h2>Versiones disponibles</h2>
+      <p>Cada rama documenta una etapa distinta del desarrollo del dispositivo.</p>
+    </div>
+    <div class="grid2">
+      <div class="version-card">
+        <span class="badge base">📘 Versión base</span>
+        <h3>Rama <code>main</code></h3>
+        <p style="color:var(--slate);font-size:.94rem;">Implementación base orientada a la comprensión del proyecto y a
+          la demostración del principio de medición de conductividad.</p>
+        <ul>
+          <li>Medición básica de conductividad</li>
+          <li>Pantalla LCD 16x2</li>
+          <li>Potenciómetro como sensor</li>
+          <li>Sin compensaciones físicas</li>
+        </ul>
+        <a class="go" href="./main/">Ver esta versión →</a>
+      </div>
+      <div class="version-card">
+        <span class="badge adv">🧪 Experimental</span>
+        <h3>Rama <code>VersionAgosto2025</code></h3>
+        <p style="color:var(--slate);font-size:.94rem;">Arquitectura más cercana a un instrumento de medición real, con
+          múltiples sensores, compensaciones físicas y mayor flexibilidad.</p>
+        <ul>
+          <li>Soporte dual OLED / LCD</li>
+          <li>Conductividad, temperatura y pH</li>
+          <li>Modelos lineal, cuadrático y cúbico</li>
+          <li>Parámetros totalmente calibrables</li>
+        </ul>
+        <a class="go" href="./VersionAgosto2025/">Ver esta versión →</a>
+      </div>
+    </div>
+    <div class="version-card potassium" style="margin-top:20px;">
+      <span class="badge new">✨ Novedad</span>
+      <h3>Medidor de Potasio (K⁺)</h3>
+      <p style="font-size:.94rem;">La evolución del proyecto: medición de potasio, un electrolito vital para la salud
+        renal. Acto de amor y tecnología.</p>
+      <a class="go"
+        href="https://github.com/paupau77/Proyecto-Hugo-Medidor-de-Salinidad-con-Arduino-UNO/tree/ProyectoHugoMedidorPotasio"
+        target="_blank">Ver en GitHub →</a>
     </div>
   </section>
 
   <!-- AUTORA -->
-  <section class="section" id="section-autora">
-    <div class="author-card">
-      <!-- User medal icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0aa3a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-pen-icon lucide-user-round-pen"><path d="M2 21a8 8 0 0 1 10.821-7.487"/><path d="M21.378 16.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/><circle cx="10" cy="8" r="5"/></svg>
-      <div class="font-bold font-green" style="font-size:1.1em;margin-top:0.3em;">Autora</div>
-      <h2 style="color:#e85d8f;display:flex;align-items:center;justify-content:center;gap:0.5em;font-size:1.5em;">
-        <!-- Book open icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e85d8f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-heart-icon lucide-book-heart"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><path d="M8.62 9.8A2.25 2.25 0 1 1 12 6.836a2.25 2.25 0 1 1 3.38 2.966l-2.626 2.856a.998.998 0 0 1-1.507 0z"/></svg>
-        Paulina Juich
-      </h2>
-      <p class="font-blue" style="margin-bottom:0.7em;">
-        Técnica Analista Universitaria en Sistemas, Tech Support IT, Programadora de PC de la UTN, autora y desarrolladora de este dispositivo, su diseño técnico, lógico y funcional.
-      </p>
-      <p style="color:#64748b;font-size:0.97em;">Agosto - Diciembre 2025</p>
+  <section class="wrap" id="autora">
+    <div class="sec-head">
+      <span class="eyebrow">Autora</span>
+      <h2>Quién está detrás del proyecto</h2>
     </div>
-    <div class="email-container">
-    <div class="envelope-static" aria-hidden="true">
-      <svg viewBox="0 0 32 32">
-        <rect x="4" y="8" width="24" height="16" rx="3" />
-        <polyline points="4,10 16,20 28,10" />
-        <polyline points="4,24 16,14 28,24" />
-      </svg>
-    </div>
-    <div class="email-address">
-     Contacto: Paulinajuich4@gmail.com
-    </div>
-  </div>
-    <div class="author-card" style="display:flex;flex-direction:column;align-items:center;">
-      <div style="display:flex;align-items:center;gap:.5em;margin-bottom:0.7em;">
-        <!-- Sun icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d2f4f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
-        <span class="font-bold font-green" style="font-size:1.1em;">Nota final</span>
-      </div>
-      <p style="text-align:center;">
-        Este proyecto es un prototipo funcional con base sólida, creado con esfuerzo, amor, pasión y cuidado, que espera convertirse en una herramienta útil en monitoreo de líquidos biológicos, aplicaciones en química, biología, monitoreo ambiental y salud.
-      </p>
-      <div style="display:flex;align-items:center;gap:.5em;margin-top:1em;">
-        <!-- Heart icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-pulse-icon lucide-heart-pulse"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
-        <span class="font-pink font-bold">Este dispositivo no solo mide, también ama y cuida. Gracias por acompañarme.</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-pulse-icon lucide-heart-pulse"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
+    <div class="author-wrap">
+      <div class="avatar-ring">PJ</div>
+      <div>
+        <h3>Paulina Juich</h3>
+        <p class="role">Técnica Analista Universitaria en Sistemas · Tech Support IT · Programadora de PC
+          (UTN)<br>Autora y desarrolladora del diseño técnico, lógico y funcional del dispositivo. Agosto–Diciembre
+          2025.</p>
+        <span class="contact">✉️ paulinajuich4@gmail.com</span>
       </div>
     </div>
+    <p class="center" style="color:var(--slate);max-width:640px;margin:30px auto 0;line-height:1.6;">
+      Este proyecto es un prototipo funcional con base sólida, creado con esfuerzo, amor, pasión y cuidado,
+      que espera convertirse en una herramienta útil en monitoreo de líquidos biológicos, química, biología,
+      monitoreo ambiental y salud. <br><b style="color:var(--coral-deep);">Este dispositivo no solo mide, también ama y
+        cuida.</b>
+    </p>
   </section>
-  </div> <footer class="footer">
-    Hecho con 💚 por @Paupau77
-    <br />
-    © 2026 Paulina Juich. Todos los derechos reservados.
-    <span style="font-size: 0.95em;">
-      Gracias por visitar Proyecto Hugo💚.
-    </span>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap footer-inner">
+      <div class="brand" style="color:#fff;">
+        <span class="brand-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="#062821">
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg></span>
+        Proyecto Hugo
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/paupau77/Proyecto-Hugo-Medidor-de-Salinidad-con-Arduino-UNO"
+          target="_blank">GitHub</a>
+        <a href="https://www.instagram.com/proyectohugo" target="_blank">Instagram</a>
+        <a href="./historia/">Historia</a>
+        <a href="./Monitor/">Monitor</a>
+        <a href="mailto:paulinajuich4@gmail.com">Contacto</a>
+      </div>
+      <p class="fine">
+        Dedicado a la memoria de Hugo Passucci. Inspirado por el amor a Agus Nicolás.<br>
+        © 2026 Paulina Juich. Todos los derechos reservados — registrado en la DNDA (Argentina), expediente
+        EX-2025-78014687.
+      </p>
+    </div>
   </footer>
 
-  <script>
-    // Simple tab navigation logic
-    document.querySelectorAll('.navbar-links button').forEach(btn => {
-      btn.addEventListener('click', function() {
-        // Remove active from all buttons
-        document.querySelectorAll('.navbar-links button').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        // Hide all sections
-        document.querySelectorAll('.section, main.section').forEach(sec => sec.classList.remove('active'));
-        // Show selected section
-        document.getElementById('section-' + this.dataset.section).classList.add('active');
-        // Scroll to top for better UX
-        window.scrollTo({top: 0, behavior: 'smooth'});
-      });
-    });
-  </script>
+  <!-- ===== INSTAGRAM SIDEBAR (original, sin modificar) ===== -->
+  <button class="open-insta-btn" id="openInstaBtn" aria-label="Ver Instagram">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+    </svg>
+  </button>
 
-<script>
-console.log("Script de corazones cargado"); // Esto te dirá en la consola si el código corre
+  <div class="sidebar-overlay" id="overlay"></div>
 
-function createHeart() {
-  const container = document.getElementById('hearts-container');
-  
-  if (!container) {
-    console.error("No se encontró el contenedor #hearts-container");
-    return;
-  }
+  <div class="insta-sidebar" id="sidebar">
+    <button id="closeSidebar"
+      style="position: absolute; top: 16px; right: 16px; z-index: 10; background: rgba(0,0,0,0.05); border: none; font-size: 20px; cursor: pointer; color: #64748b; width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">✕</button>
 
-  const heart = document.createElement('div');
-  heart.className = 'floating-heart';
-  heart.innerHTML = `
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-    </svg>`;
-
-  const size = Math.random() * 20 + 15;
-  heart.style.left = Math.random() * 100 + 'vw';
-  heart.style.width = size + 'px';
-  heart.style.animationDuration = (Math.random() * 5 + 10) + 's';
-  
-  container.appendChild(heart);
-  
-  setTimeout(() => heart.remove(), 15000);
-}
-
-// Intentar crear corazones apenas cargue la página
-window.onload = () => {
-  for (let i = 0; i < 10; i++) {
-    setTimeout(createHeart, i * 300);
-  }
-  setInterval(createHeart, 2000);
-};
-</script>
-
-<button class="open-insta-btn" onclick="toggleSidebar()">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-</button>
-
-<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
-
-<div class="insta-sidebar" id="sidebar">
-  <button onclick="toggleSidebar()" style="position: absolute; top: 20px; right: 20px; z-index: 10; background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b;">✕</button>
-
-  <div class="animate-blob" style="position: absolute; top: -10%; left: -10%; width: 200px; height: 200px; background: #bbf7d0; border-radius: 50%; filter: blur(40px); opacity: 0.3; pointer-events: none;"></div>
-  <div class="animate-blob" style="position: absolute; bottom: 10%; right: -5%; width: 150px; height: 150px; background: #ccfbf1; border-radius: 50%; filter: blur(40px); opacity: 0.3; pointer-events: none; animation-delay: 2s;"></div>
-
-  <div style="position: relative; z-index: 2; display: flex; flex-direction: column; gap: 32px;">
-    
-    <div style="margin-top: 40px;">
-      <div style="display: flex; items-center; gap: 12px; margin-bottom: 16px;">
-        <span style="background: #fff1f2; padding: 10px; border-radius: 12px; color: #f43f5e; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(244, 63, 94, 0.15);">
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-    <path d="M3.22 12H9.5l1.5-3 2 6 1.5-3h4.72" stroke="#f43f5e" />
-  </svg>
-</span>
-        <h2 style="font-size: 1.5rem; font-weight: 800;   color: var(--turquesa); margin: 0;">Proyecto Hugo<span style="color: #22c55e;">💚</span></h2>
-      </div>
-      
-      <p style="color: #475569; line-height: 1.6; font-size: 1.1rem; margin-bottom: 16px;">
-        "A veces el amor también se expresa con circuitos, sensores, pantallas y datos..."
-      </p>
-
-    <div style="display: flex; flex-wrap: wrap; gap: 12px 16px; font-size: 0.8rem; color: #64748b; margin-top: 8px;">
-    
-    <span style="display: flex; align-items: center; gap: 4px; white-space: nowrap;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0aa3a3" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M15 2v2M9 2v2M20 15h2M20 9h2M15 20v2M9 20v2M2 15h2M2 9h2"/></svg>
-        Arduino UNO
-    </span>
-
-    <span style="display: flex; align-items: center; gap: 4px; white-space: nowrap;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#14b8b6" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Sensores
-    </span>
-
-    <span style="display: flex; align-items: center; gap: 4px; white-space: nowrap;">
-        <svg width="14" height="14" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs><linearGradient id="kidneyGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#f87171;"/><stop offset="100%" style="stop-color:#991b1b;"/></linearGradient></defs>
-          <path d="M70,165 Q60,200 65,280" stroke="#f87171" stroke-width="15" fill="none" stroke-linecap="round" />
-          <path d="M100,20 C150,20 180,60 180,110 C180,180 150,260 100,280 C60,295 20,250 30,190 C35,160 60,150 60,150 C60,150 35,140 30,110 C20,50 60,20 100,20 Z" fill="url(#kidneyGradient)" stroke="#7f1d1d" stroke-width="4" />
-        </svg>
-        Salud renal
-    </span>
-</div>
-
+    <!-- Background blobs -->
+    <div class="animate-blob"
+      style="position: absolute; top: -10%; left: -10%; width: 200px; height: 200px; background: #bbf7d0; border-radius: 50%; filter: blur(40px); opacity: 0.3; pointer-events: none;">
+    </div>
+    <div class="animate-blob"
+      style="position: absolute; bottom: 10%; right: -5%; width: 150px; height: 150px; background: #ccfbf1; border-radius: 50%; filter: blur(40px); opacity: 0.3; pointer-events: none; animation-delay: 2s;">
     </div>
 
-    <div class="insta-card-wrapper" style="position: relative; width: 100%;">
-      <div class="insta-glow-effect"></div>
-      <div style="position: relative; background: white; border: 1px solid #f1f5f9; padding: 24px; border-radius: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
-        
-        <div style="background: linear-gradient(to top right, #facc15, #ef4444, #9333ea); padding: 12px; border-radius: 50%; color: white;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+    <div style="position: relative; z-index: 2; padding: 30px; display: flex; flex-direction: column; gap: 24px;">
+      <!-- Header -->
+      <div style="margin-top: 20px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <span
+            style="background: #fff1f2; padding: 10px; border-radius: 12px; color: #f43f5e; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(244, 63, 94, 0.15);">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+              <path d="M3.22 12H9.5l1.5-3 2 6 1.5-3h4.72" stroke="#f43f5e" />
+            </svg>
+          </span>
+          <h2 style="font-size: 1.4rem; font-weight: 800; color: #0aa3a3; margin: 0; border: none;">Proyecto Hugo<span
+              style="color: #22c55e;">💚</span></h2>
         </div>
-
-        <div style="text-align: center;">
-          <p style="color: #1e293b; font-weight: 600; font-size: 1.125rem; margin: 0;">Seguí el desarrollo</p>
-          <p style="color: #64748b; font-size: 0.875rem; margin-top: 4px;">Avances, fotos y actualizaciones</p>
-        </div>
-
-        <a href="https://www.instagram.com/proyectohugo" target="_blank" style="width: 100%; text-decoration: none;">
-          <button style="width: 100%; padding: 12px; background: #0f172a; color: white; border: none; border-radius: 0.5rem; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background 0.3s;">
-            <span>@proyectohugo</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-          </button>
-        </a>
-      </div>
-    </div>
-
-    <div style="text-align: center; border-top: 1px solid #e2e8f0; padding-top: 32px; margin-top: 20px;">
-      <p style="color: #64748b; font-size: 0.875rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
-        Hecho con <span style="color: #22c55e;">💚</span> por <span style="font-weight: 600; color: #334155;">Paulina Juich</span>
-      </p>
-      <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 16px; line-height: 1.4;">
-        <p>Dedicado a la memoria de Hugo Passucci.</p>
-        <p>Inspirado por el amor a Agus Nicolás.</p>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<script>
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-  
-  // clase 'active' para mover la solapa
-  sidebar.classList.toggle('active');
-  overlay.classList.toggle('active');
-}
-</script>
-
-<!-- 
-  SOLAPA POTASIO "TECH-AESTHETIC" v2.0
-  Mejoras: Fondo PCB visible, Botón centrado, UI pulida
--->
-
-<!-- Botón Flotante (Trigger) -->
-<button id="btnPotasioSolapa" type="button" class="solapa-tech-trigger" aria-label="Ver versión potasio">
-  <div class="trigger-content">
-    <span class="emoji-main">NOVEDAD💛</span>
-    <div class="pulse-ring"></div>
-    <div class="pulse-ring delay"></div>
-  </div>
-</button>
-
-<!-- Panel Lateral (Overlay) -->
-<aside id="panelPotasio" class="panel-tech-overlay">
-  <!-- Fondo PCB (Printed Circuit Board) generado por CSS -->
-  <div class="pcb-pattern"></div>
-  
-  <div class="panel-container">
-    <button id="cerrarPanelPotasio" aria-label="Cerrar" class="btn-close-tech">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-    </button>
-
-    <div class="panel-scroll-content">
-      <div class="header-section">
-        <div class="chip-badge">
-          <span class="chip-icon">💊💛</span> K+ (Potasio)
-        </div>
-        <h2 class="tech-title">Acto de amor<br><span class="highlight-text">y tecnología</span></h2>
-        <div class="circuit-line"></div>
-      </div>
-
-      <div class="text-content">
-        <p class="intro-text">
-          Proyecto desarrollado con sentido humano. Una exploración técnica en la intersección de la salud, la química y la empatía.
+        <p style="color: #475569; line-height: 1.6; font-size: 1rem; margin-bottom: 16px;">
+          "A veces el amor también se expresa con circuitos, sensores, pantallas y datos..."
         </p>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.78rem; color: #64748b;">
+          <span
+            style="display: flex; align-items: center; gap: 4px; background: rgba(20,184,182,0.08); padding: 4px 10px; border-radius: 8px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0aa3a3" stroke-width="2">
+              <rect x="4" y="4" width="16" height="16" rx="2" />
+              <path d="M9 9h6v6H9z" />
+            </svg>
+            Arduino UNO
+          </span>
+          <span
+            style="display: flex; align-items: center; gap: 4px; background: rgba(20,184,182,0.08); padding: 4px 10px; border-radius: 8px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#14b8b6" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            Sensores
+          </span>
+          <span
+            style="display: flex; align-items: center; gap: 4px; background: rgba(244,63,94,0.08); padding: 4px 10px; border-radius: 8px;">
+            ❤️ Salud renal
+          </span>
+        </div>
+      </div>
 
-        <div class="card-tech">
-          <div class="card-decoration"></div>
-          <span class="emoji-float">⚡</span>
-          <p>
-            <strong>Más que electrónica.</strong><br>
-            Nunca fue solo medir valores. Nació del miedo y del amor por alguien en riesgo. Es tecnología con propósito.
-          </p>
+      <!-- Carrusel de fotos estilo story (nuevo) -->
+      <div class="insta-carousel" id="instaCarousel">
+        <div class="story-bars" id="storyBars"></div>
+
+        <div class="story-slide active" data-index="0">
+          <img src="./assets/carousel/foto-1.jpg" alt="Armando el circuito de Proyecto Hugo" loading="lazy">
+          <div class="story-flash"></div>
+          <div class="sparkle-layer"></div>
+          <div class="story-gradient"></div>
+          <div class="story-tag">🛠️ Armando el prototipo</div>
+        </div>
+        <div class="story-slide" data-index="1">
+          <img src="./assets/carousel/foto-2.jpg" alt="Presentación de Proyecto Hugo en auditorio" loading="lazy">
+          <div class="story-flash"></div>
+          <div class="sparkle-layer"></div>
+          <div class="story-gradient"></div>
+          <div class="story-tag">🎤 Presentando el proyecto</div>
+        </div>
+        <div class="story-slide" data-index="2">
+          <img src="./assets/carousel/foto-3.jpg" alt="Conversando sobre Proyecto Hugo" loading="lazy">
+          <div class="story-flash"></div>
+          <div class="sparkle-layer"></div>
+          <div class="story-gradient"></div>
+          <div class="story-tag">💬 Charlando sobre el proyecto</div>
+        </div>
+        <div class="story-slide" data-index="3">
+          <img src="./assets/carousel/foto-4.jpg" alt="Proyecto Hugo en una jornada académica" loading="lazy">
+          <div class="story-flash"></div>
+          <div class="sparkle-layer"></div>
+          <div class="story-gradient"></div>
+          <div class="story-tag">🎓 Congreso TEYET</div>
+        </div>
+        <div class="story-slide" data-index="4">
+          <img src="./assets/carousel/foto-5.jpg" alt="Equipo de Proyecto Hugo" loading="lazy">
+          <div class="story-flash"></div>
+          <div class="sparkle-layer"></div>
+          <div class="story-gradient"></div>
+          <div class="story-tag">💚 El equipo de Proyecto Hugo</div>
         </div>
 
-        <ul class="tech-list">
-          <li>
-            <span class="list-icon">💛</span> 
-            <span><strong>Vital.</strong> Hugo tenía problemas renales. Medir este electrolito era cuestión de vida.</span>
-          </li>
-          <li>
-            <span class="list-icon">💛</span> 
-            <span><strong>Ayudar & acompañar.</strong> Este dispositivo no reemplaza al médico, pero <em>acompaña</em>. Medir es decir: <strong>"Me importas"</strong>.</span>
-          </li>
-        </ul>
+        <div class="story-nav prev" id="storyPrev" aria-label="Foto anterior"></div>
+        <div class="story-nav next" id="storyNext" aria-label="Foto siguiente"></div>
+      </div>
 
-        <blockquote class="quote-box">
-          Porque a veces cuidar también es crear. Y medir también es amar.💖
-        </blockquote>
-
-        <!-- Botón GitHub Corregido -->
-        <div class="action-area">
-          <a href="https://github.com/paupau77/Proyecto-Hugo-Medidor-de-Salinidad-con-Arduino-UNO/tree/ProyectoHugoMedidorPotasio" 
-             target="_blank" 
-             class="btn-action-github">
-            <svg class="github-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-            <span>✨NUEVO: Proyecto Hugo Medidor de POTASIO✨</span>
+      <!-- Instagram Card -->
+      <div class="insta-card-wrapper" style="position: relative; width: 100%;">
+        <div class="insta-glow-effect"></div>
+        <div
+          style="position: relative; background: white; border: 1px solid #f1f5f9; padding: 24px; border-radius: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
+          <div
+            style="background: linear-gradient(to top right, #facc15, #ef4444, #9333ea); padding: 12px; border-radius: 50%; color: white;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+          </div>
+          <div style="text-align: center;">
+            <p style="color: #1e293b; font-weight: 600; font-size: 1.1rem; margin: 0;">Seguí el desarrollo</p>
+            <p style="color: #64748b; font-size: 0.85rem; margin-top: 4px;">Avances, fotos y actualizaciones</p>
+          </div>
+          <a href="https://www.instagram.com/proyectohugo" target="_blank" style="width: 100%; text-decoration: none;">
+            <button
+              style="width: 100%; padding: 12px; background: linear-gradient(135deg, #f09433, #dc2743, #bc1888); color: white; border: none; border-radius: 12px; font-weight: 600; font-family: 'Outfit', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(220,39,67,0.3);"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(220,39,67,0.4)';"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(220,39,67,0.3)';">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              </svg>
+              <span>@proyectohugo</span>
+            </button>
           </a>
         </div>
-        
-        <div class="footer-signature">
-          <span class="code-font">&lt;Hecho con 🧡 y circuitos /&gt;</span>
-        </div>
-                  <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 20px; line-height: 1.4;">
-      <p style="color: #64748b; font-size: 0.875rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                Dedicado a la memoria de Hugo Passucci. <br></br>
-        Inspirado por el amor a Agus Nicolás.</p>
       </div>
+
+      <!-- Footer -->
+      <div style="text-align: center; border-top: 1px solid #e2e8f0; padding-top: 24px;">
+        <p
+          style="color: #64748b; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
+          Hecho con <span style="color: #22c55e;">💚</span> por <span style="font-weight: 600; color: #334155;">Paulina
+            Juich</span>
+        </p>
+        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 12px; line-height: 1.4;">
+          <p>Dedicado a la memoria de Hugo Passucci.</p>
+          <p>Inspirado por el amor a Agus Nicolás.</p>
+        </div>
       </div>
     </div>
   </div>
-</aside>
 
-<style>
-/* --- FUENTES Y VARIABLES --- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+  <!-- ===== SOLAPA POTASIO (original, sin modificar) ===== -->
+  <button id="btnPotasioSolapa" type="button" class="solapa-tech-trigger" aria-label="Ver versión potasio">
+    <div class="trigger-content">
+      <span class="emoji-main">NOVEDAD💛</span>
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring delay"></div>
+    </div>
+  </button>
 
-:root {
-  --k-gold: #ffc107;
-  --k-orange: #ff9800;
-  --k-dark: #2c1e05;
-  --tech-bg: #ffffff;
-  --tech-gray: #f5f5f7;
-}
+  <aside id="panelPotasio" class="panel-tech-overlay">
+    <div class="pcb-pattern"></div>
+    <div class="panel-container">
+      <button id="cerrarPanelPotasio" aria-label="Cerrar" class="btn-close-tech">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="panel-scroll-content">
+        <div class="header-section">
+          <div class="chip-badge">
+            <span class="chip-icon">💊💛</span> K+ (Potasio)
+          </div>
+          <h2 class="tech-title">Acto de amor<br><span class="highlight-text">y tecnología</span></h2>
+          <div class="circuit-line"></div>
+        </div>
+        <div class="text-content">
+          <p class="intro-text">
+            Proyecto desarrollado con sentido humano. Una exploración técnica en la intersección de la salud, la química
+            y la empatía.
+          </p>
+          <div class="card-tech">
+            <div class="card-decoration"></div>
+            <span class="emoji-float">⚡</span>
+            <p>
+              <strong>Más que electrónica.</strong><br>
+              Nunca fue solo medir valores. Nació del miedo y del amor por alguien en riesgo. Es tecnología con
+              propósito.
+            </p>
+          </div>
+          <ul class="tech-list">
+            <li>
+              <span class="list-icon">💛</span>
+              <span><strong>Vital.</strong> Hugo tenía problemas renales. Medir este electrolito era cuestión de
+                vida.</span>
+            </li>
+            <li>
+              <span class="list-icon">💛</span>
+              <span><strong>Ayudar &amp; acompañar.</strong> Este dispositivo no reemplaza al médico, pero
+                <em>acompaña</em>. Medir es decir: <strong>"Me importas"</strong>.</span>
+            </li>
+          </ul>
+          <blockquote class="quote-box">
+            Porque a veces cuidar también es crear. Y medir también es amar.💖
+          </blockquote>
+          <div class="action-area">
+            <a href="https://github.com/paupau77/Proyecto-Hugo-Medidor-de-Salinidad-con-Arduino-UNO/tree/ProyectoHugoMedidorPotasio"
+              target="_blank" class="btn-action-github">
+              <svg class="github-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                </path>
+              </svg>
+              <span>✨NUEVO: Proyecto Hugo Medidor de POTASIO✨</span>
+            </a>
+          </div>
+          <div class="footer-signature">
+            <span class="code-font">&lt;Hecho con 🧡 y circuitos /&gt;</span>
+          </div>
+          <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 20px; line-height: 1.4;">
+            <p style="color: #64748b; font-size: 0.875rem; text-align: center;">
+              Dedicado a la memoria de Hugo Passucci.<br>
+              Inspirado por el amor a Agus Nicolás.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
 
-/* --- 1. BOTÓN FLOTANTE (TRIGGER) --- */
-.solapa-tech-trigger {
-  position: fixed;
-  left: 24px; bottom: 32px;
-  z-index: 1500;
-  width: 64px; height: 64px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 
-    0 10px 25px -5px rgba(255, 193, 7, 0.5),
-    0 4px 10px -2px rgba(0, 0, 0, 0.05),
-    inset 0 0 0 1px rgba(255,255,255,0.5);
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  overflow: visible;
-  padding: 0;
-}
+  <script>
+    // dark mode
+    const toggle = document.getElementById('darkModeToggle');
+    const saved = localStorage.getItem('ph-theme') || 'light';
+    if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); toggle.textContent = '☀️'; }
+    toggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (isDark) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('ph-theme', 'light'); toggle.textContent = '🌙'; }
+      else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('ph-theme', 'dark'); toggle.textContent = '☀️'; }
+    });
 
-.solapa-tech-trigger:hover {
-  transform: translateY(-4px) scale(1.05);
-  background: #fff;
-  box-shadow: 0 20px 40px -5px rgba(255, 193, 7, 0.6);
-}
+    // instagram sidebar
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    document.getElementById('openInstaBtn').addEventListener('click', toggleSidebar);
+    document.getElementById('overlay').addEventListener('click', toggleSidebar);
+    document.getElementById('closeSidebar').addEventListener('click', toggleSidebar);
 
-.trigger-content {
-  position: relative;
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.emoji-main {
-  font-style: italic;
-  color: #bfa048;
-  font-size: 0.5rem;
-  z-index: 2;
-  position: relative;
-}
-
-/* Anillos de pulso */
-.pulse-ring {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%; height: 100%;
-  border-radius: 20px;
-  border: 2px solid var(--k-gold);
-  opacity: 0;
-  animation: pulse-tech 2.5s infinite;
-}
-.pulse-ring.delay {
-  animation-delay: 0.8s;
-}
-
-@keyframes pulse-tech {
-  0% { width: 100%; height: 100%; opacity: 0.6; border-color: var(--k-gold); }
-  100% { width: 180%; height: 180%; opacity: 0; border-color: transparent; }
-}
-
-/* --- 2. PANEL LATERAL --- */
-.panel-tech-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  height: 100vh;
-  width: 420px;
-  max-width: 90vw;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  z-index: 2000;
-  transform: translateX(-105%);
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 20px 0 60px rgba(0,0,0,0.15);
-  font-family: 'Inter', sans-serif;
-  border-right: 1px solid rgba(255,255,255,0.5);
-}
-
-.panel-tech-overlay.panel-abierto {
-  transform: translateX(0);
-}
-
-/* --- 3. FONDO PCB (CIRCUITO) --- */
-.pcb-pattern {
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 0;
-  opacity: 0.08;
-  pointer-events: none;
-  /* Patrón complejo de electrónica usando gradientes */
-  background-image: 
-    /* Puntos de conexión (vías) */
-    radial-gradient(circle at 20px 20px, #000 2px, transparent 2.5px),
-    /* Líneas horizontales */
-    linear-gradient(to right, #000 1px, transparent 1px),
-    /* Líneas verticales */
-    linear-gradient(to bottom, #000 1px, transparent 1px);
-  background-size: 40px 40px; /* Tamaño de la cuadrícula */
-  mask-image: linear-gradient(to bottom, black 40%, transparent 100%); /* Desvanecer hacia abajo */
-  -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-}
-
-/* --- 4. CONTENIDO INTERNO --- */
-.panel-container {
-  position: relative;
-  z-index: 2;
-  height: 100%;
-  display: flex; flex-direction: column;
-}
-
-.btn-close-tech {
-  position: absolute;
-  top: 24px; right: 24px;
-  width: 36px; height: 36px;
-  border-radius: 12px;
-  background: rgba(0,0,0,0.04);
-  border: none;
-  color: #666;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-  z-index: 20;
-}
-.btn-close-tech:hover {
-  background: rgba(0,0,0,0.1);
-  color: #000;
-  transform: rotate(90deg);
-}
-
-.panel-scroll-content {
-  overflow-y: auto;
-  padding: 40px 36px;
-  height: 100%;
-}
-
-/* Header */
-.header-section { margin-bottom: 30px; }
-
-.chip-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #bfa048;
-  background: #fffbf0;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 193, 7, 0.3);
-  margin-bottom: 16px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.tech-title {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--k-dark);
-  line-height: 1.1;
-  margin: 0 0 15px 0;
-  letter-spacing: -0.03em;
-}
-
-.highlight-text {
-  background: linear-gradient(120deg, var(--k-gold) 0%, var(--k-orange) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.circuit-line {
-  height: 2px; width: 80px;
-  background: linear-gradient(90deg, var(--k-gold), transparent);
-  position: relative;
-}
-.circuit-line::after {
-  content: ''; position: absolute; right: 0; top: -2px;
-  width: 6px; height: 6px; background: var(--k-gold); border-radius: 50%;
-}
-
-/* Texto y Tarjetas */
-.text-content { color: #555; font-size: 1.05rem; line-height: 1.6; }
-.intro-text { font-weight: 500; color: #333; margin-bottom: 25px; }
-
-.card-tech {
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 16px;
-  padding: 24px;
-  margin: 25px 0;
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
-  position: relative;
-  overflow: hidden;
-}
-
-.card-decoration {
-  position: absolute; top: 0; left: 0; width: 4px; height: 100%;
-  background: var(--k-gold);
-}
-
-.emoji-float {
-  float: right; font-size: 1.8rem; margin-left: 10px; margin-bottom: 5px;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-}
-
-.tech-list {
-  list-style: none; padding: 0; margin: 20px 0;
-}
-.tech-list li {
-  display: flex; align-items: flex-start; gap: 12px;
-  margin-bottom: 16px;
-}
-.list-icon { font-size: 1.2rem; line-height: 1.4; }
-
-.quote-box {
-  margin: 30px 0;
-  padding: 20px;
-  background: #fffbf0;
-  border-radius: 0 16px 16px 16px;
-  font-style: italic;
-  color: #8d6e1f;
-  position: relative;
-}
-.quote-box::before {
-  content: '"'; position: absolute; top: 10px; left: 10px;
-  font-size: 3rem; color: rgba(255, 193, 7, 0.2); font-family: serif; line-height: 0;
-}
-
-/* --- BOTÓN GITHUB (CORREGIDO) --- */
-.action-area {
-  margin-top: 30px;
-  width: 100%;
-}
-
-.btn-action-github {
-  /* Flexbox para centrar contenido */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  
-  /* Dimensiones y Modelo de Caja */
-  width: 100%;
-  box-sizing: border-box; /* CRUCIAL: Evita que el padding sume al ancho */
-  padding: 16px 20px;
-  margin: 0; /* Reseteo de márgenes */
-  
-  /* Estilo */
-  background: #1a1a1a;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 14px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  transition: all 0.2s ease;
-}
-
-.btn-action-github:hover {
-  background: #000;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-}
-
-.footer-signature {
-  text-align: center; margin-top: 40px; opacity: 0.6;
-}
-.code-font {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
-}
-
-/* --- RESPONSIVE --- */
-@media (max-width: 480px) {
-  .panel-tech-overlay {
-    width: 100%; height: 85vh;
-    top: auto; bottom: 0;
-    border-radius: 24px 24px 0 0;
-    transform: translateY(110%);
-    border-right: none; border-top: 1px solid rgba(255,255,255,0.5);
-  }
-  .panel-tech-overlay.panel-abierto { transform: translateY(0); }
-  .solapa-tech-trigger { left: 20px; bottom: 20px; width: 56px; height: 56px; }
-}
-</style>
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-  const btn = document.getElementById("btnPotasioSolapa");
-  const panel = document.getElementById("panelPotasio");
-  const cerrar = document.getElementById("cerrarPanelPotasio");
-  
-  function togglePanel(abrir) {
-    if(abrir) {
-      panel.classList.add("panel-abierto");
-      document.body.style.overflow = "hidden"; 
-    } else {
-      panel.classList.remove("panel-abierto");
-      document.body.style.overflow = ""; 
+    // hearts
+    function createHeart() {
+      const c = document.getElementById('hearts-container'); if (!c) return;
+      const h = document.createElement('div'); h.className = 'floating-heart';
+      h.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+      const size = Math.random() * 16 + 12;
+      h.style.left = Math.random() * 100 + 'vw';
+      h.style.width = size + 'px';
+      h.style.animationDuration = (Math.random() * 6 + 12) + 's';
+      c.appendChild(h);
+      setTimeout(() => h.remove(), 18000);
     }
-  }
+    window.addEventListener('load', () => { for (let i = 0; i < 5; i++) setTimeout(createHeart, i * 900); setInterval(createHeart, 4500); });
 
-  btn.addEventListener("click", () => togglePanel(true));
-  cerrar.addEventListener("click", () => togglePanel(false));
+    // live readout simulation in hero panel
+    function tick() {
+      const sal = (1.6 + Math.random() * 0.5).toFixed(2);
+      const temp = (23.5 + Math.random() * 1.4).toFixed(1);
+      const ph = (6.9 + Math.random() * 0.3).toFixed(2);
+      const elSal = document.getElementById('hero-sal');
+      const elTemp = document.getElementById('hero-temp');
+      const elPh = document.getElementById('hero-ph');
+      if (elSal) elSal.textContent = sal + ' g/L';
+      if (elTemp) elTemp.textContent = temp + ' °C';
+      if (elPh) elPh.textContent = ph;
+      const clock = document.getElementById('clock');
+      if (clock) clock.textContent = new Date().toLocaleTimeString('es-AR', { hour12: false });
+    }
+    setInterval(tick, 1800); tick();
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === "Escape" && panel.classList.contains("panel-abierto")) togglePanel(false);
-  });
+    // active nav link on scroll (simple)
+    const sections = ['inicio', 'funciona', 'vision'];
+    window.addEventListener('scroll', () => {
+      let current = 'inicio';
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= el.offsetTop - 120) current = id;
+      });
+      document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('is-active'));
+      const active = document.querySelector('.nav-links a[href="#' + current + '"]');
+      if (active) active.classList.add('is-active');
+    });
 
-  panel.addEventListener("click", (e) => {
-    // Cierra si clickeas el fondo PCB (área vacía)
-    if(e.target === panel || e.target.classList.contains('pcb-pattern')) togglePanel(false);
-  });
-});
-</script>
+    // ===== PANEL POTASIO (original, sin modificar) =====
+    document.addEventListener("DOMContentLoaded", function () {
+      const btnPotasio = document.getElementById("btnPotasioSolapa");
+      const panelPotasio = document.getElementById("panelPotasio");
+      const cerrarPotasio = document.getElementById("cerrarPanelPotasio");
+
+      function togglePanel(abrir) {
+        if (abrir) {
+          panelPotasio.classList.add("panel-abierto");
+          document.body.style.overflow = "hidden";
+        } else {
+          panelPotasio.classList.remove("panel-abierto");
+          document.body.style.overflow = "";
+        }
+      }
+
+      btnPotasio.addEventListener("click", () => togglePanel(true));
+      cerrarPotasio.addEventListener("click", () => togglePanel(false));
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape" && panelPotasio.classList.contains("panel-abierto")) togglePanel(false);
+      });
+
+      panelPotasio.addEventListener("click", (e) => {
+        if (e.target === panelPotasio || e.target.classList.contains('pcb-pattern')) togglePanel(false);
+      });
+    });
+
+    // ===== CARRUSEL ESTILO STORY (panel Instagram) =====
+    (function () {
+      const carousel = document.getElementById('instaCarousel');
+      if (!carousel) return;
+      const slides = carousel.querySelectorAll('.story-slide');
+      const barsContainer = document.getElementById('storyBars');
+      const total = slides.length;
+      let current = 0;
+      let timer = null;
+      const DURATION = 4000;
+
+      // construir barritas
+      slides.forEach((_, i) => {
+        const bar = document.createElement('div');
+        bar.className = 'story-bar';
+        bar.innerHTML = '<i></i>';
+        barsContainer.appendChild(bar);
+      });
+      const bars = barsContainer.querySelectorAll('.story-bar');
+
+      function render() {
+        slides.forEach((s, i) => s.classList.toggle('active', i === current));
+        bars.forEach((b, i) => {
+          b.classList.remove('active', 'done');
+          const fill = b.querySelector('i');
+          if (i < current) { b.classList.add('done'); }
+          else if (i === current) { b.classList.add('active'); }
+          else { fill.style.width = '0%'; }
+        });
+        spawnSparkles(slides[current]);
+      }
+
+      // ---- Destello: genera chispitas dentro de la foto activa ----
+      const sparkleSVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c.6 4.6 2 8 4.5 10.5S22.4 14.4 24 15c-4.6.6-8 2-10.5 4.5S9.6 24.4 9 24c-.6-4.6-2-8-4.5-10.5S-.4 9.6 0 9c4.6-.6 8-2 10.5-4.5S14.4.6 12 0z"/></svg>';
+      function spawnSparkles(slide) {
+        if (!slide) return;
+        const layer = slide.querySelector('.sparkle-layer');
+        if (!layer) return;
+        layer.innerHTML = '';
+        const count = 6;
+        for (let i = 0; i < count; i++) {
+          const sp = document.createElement('span');
+          sp.className = 'sparkle';
+          sp.innerHTML = sparkleSVG;
+          const top = 15 + Math.random() * 70;
+          const left = 15 + Math.random() * 70;
+          const size = 8 + Math.random() * 10;
+          sp.style.top = top + '%';
+          sp.style.left = left + '%';
+          sp.style.width = size + 'px';
+          sp.style.height = size + 'px';
+          sp.style.animationDelay = (Math.random() * 0.35) + 's';
+          layer.appendChild(sp);
+        }
+      }
+
+      function next() { current = (current + 1) % total; render(); restart(); }
+      function prev() { current = (current - 1 + total) % total; render(); restart(); }
+
+      function restart() {
+        clearTimeout(timer);
+        timer = setTimeout(next, DURATION);
+      }
+
+      document.getElementById('storyNext').addEventListener('click', next);
+      document.getElementById('storyPrev').addEventListener('click', prev);
+
+      // pausar al pasar el mouse (desktop)
+      carousel.addEventListener('mouseenter', () => clearTimeout(timer));
+      carousel.addEventListener('mouseleave', restart);
+
+      render();
+      restart();
+    })();
+  </script>
 </body>
+
 </html>
