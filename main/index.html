@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Rama main — Proyecto Hugo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#0F9D8C; --teal-glow:#34E0C4; --coral:#FF6F91; --coral-deep:#E84F77;
+  --navy:#0A1628; --mist:#F4FAF9; --ink:#0B1220; --slate:#4B5A6A; --card:#FFFFFF;
+  --line:rgba(11,18,32,0.08); --radius:20px; --ease:cubic-bezier(.22,1,.36,1);
+  --shadow-card:0 18px 40px -16px rgba(10,22,40,0.16);
+}
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--mist);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
+a{color:inherit;}
+.wrap{max-width:760px;margin:0 auto;padding:0 24px;width:100%;box-sizing:border-box;}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(244,250,249,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 0;}
+.topbar .wrap{display:flex;justify-content:space-between;align-items:center;max-width:1000px;}
+.back{font-size:.88rem;font-weight:600;color:var(--slate);text-decoration:none;}
+.back:hover{color:var(--teal);}
+.brand-mini{font-weight:700;display:flex;align-items:center;gap:8px;}
+.brand-mini .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-glow));}
+
+main{flex:1;}
+.hero-mini{background:radial-gradient(ellipse 70% 60% at 50% 0%, rgba(52,224,196,0.18), transparent 60%), var(--navy);color:#fff;padding:70px 0 56px;text-align:center;}
+.badge{display:inline-flex;font-size:.74rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:6px 14px;border-radius:999px;background:rgba(15,157,140,.18);color:var(--teal-glow);border:1px solid rgba(52,224,196,.3);}
+.hero-mini h1{font-size:clamp(1.8rem,4vw,2.4rem);margin:18px 0 10px;}
+.hero-mini p{color:#AFC4C2;max-width:520px;margin:0 auto;line-height:1.6;}
+
+section{padding:56px 0;}
+.feature-list{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:28px 0;}
+@media (max-width:560px){.feature-list{grid-template-columns:1fr;}}
+.feature-list .item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:.92rem;color:var(--slate);display:flex;gap:10px;align-items:flex-start;box-shadow:var(--shadow-card);}
+.feature-list .item b{color:var(--ink);}
+.feature-list .item .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);margin-top:6px;flex-shrink:0;}
+
+.note{background:rgba(255,111,145,.07);border:1px solid rgba(255,111,145,.25);border-radius:14px;padding:18px 20px;font-size:.94rem;color:var(--coral-deep);font-weight:600;margin-top:18px;}
+
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:36px;}
+.cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--teal),var(--teal-glow));color:#06231f;font-weight:700;font-size:.9rem;padding:12px 20px;border-radius:12px;text-decoration:none;box-shadow:0 10px 24px -6px rgba(15,157,140,.5);}
+.cta.dark{background:#1a1a1a;color:#fff;box-shadow:0 10px 24px -6px rgba(0,0,0,.3);}
+.cta.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;}
+
+footer{background:var(--navy);color:#9FB6B2;padding:36px 0;text-align:center;font-size:.82rem;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <a href="../" class="back">← Proyecto Hugo</a>
+    <div class="brand-mini"><span class="dot"></span> Rama main</div>
+  </div>
+</div>
+
+<main>
+  <header class="hero-mini">
+    <div class="wrap">
+      <span class="badge">📘 Versión base</span>
+      <h1>Rama <code>main</code></h1>
+      <p>Implementación base del proyecto, orientada a la comprensión del principio de medición de conductividad.</p>
+    </div>
+  </header>
+
+  <section class="wrap">
+    <h2 style="font-size:1.3rem;">Qué incluye esta versión</h2>
+    <p style="color:var(--slate);line-height:1.6;">Esta versión prioriza la simplicidad y la comprensión conceptual del dispositivo.</p>
+    <div class="feature-list">
+      <div class="item"><span class="dot"></span><span><b>Medición básica</b> de conductividad eléctrica</span></div>
+      <div class="item"><span class="dot"></span><span><b>Pantalla LCD 16x2</b> para visualizar resultados</span></div>
+      <div class="item"><span class="dot"></span><span><b>Potenciómetro</b> utilizado como sensor</span></div>
+      <div class="item"><span class="dot"></span><span><b>Sin compensaciones físicas</b> — modelo simplificado</span></div>
+    </div>
+    <div class="note">💡 Ideal como punto de partida y base para futuras mejoras.</div>
+    <div class="cta-row">
+      <a href="https://github.com/paupau77/Proyecto-Hugo-Arduino-Dispositivo-mi-Medidor-de-Salinidad-con-Arduino-UNO" target="_blank" class="cta dark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        Ver en GitHub
+      </a>
+      <a href="../VersionAgosto2025/" class="cta ghost">Comparar con VersionAgosto2025 →</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Hecho con 💚 por @Paupau77 · © 2026 Paulina Juich. Todos los derechos reservados.
+</footer>
+
+</body>
+</html>

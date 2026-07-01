@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Rama VersionAgosto2025 — Proyecto Hugo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#0F9D8C; --teal-glow:#34E0C4; --amber:#FFB648; --coral-deep:#E84F77;
+  --navy:#0A1628; --mist:#F4FAF9; --ink:#0B1220; --slate:#4B5A6A; --card:#FFFFFF;
+  --line:rgba(11,18,32,0.08); --radius:20px;
+  --shadow-card:0 18px 40px -16px rgba(10,22,40,0.16);
+}
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--mist);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
+a{color:inherit;}
+.wrap{max-width:840px;margin:0 auto;padding:0 24px;width:100%;box-sizing:border-box;}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(244,250,249,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 0;}
+.topbar .wrap{display:flex;justify-content:space-between;align-items:center;max-width:1000px;}
+.back{font-size:.88rem;font-weight:600;color:var(--slate);text-decoration:none;}
+.back:hover{color:var(--teal);}
+.brand-mini{font-weight:700;display:flex;align-items:center;gap:8px;}
+.brand-mini .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#E8902A);}
+
+main{flex:1;}
+.hero-mini{background:radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255,182,72,0.2), transparent 60%), var(--navy);color:#fff;padding:70px 0 56px;text-align:center;}
+.badge{display:inline-flex;font-size:.74rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:6px 14px;border-radius:999px;background:rgba(255,182,72,.18);color:#FFD896;border:1px solid rgba(255,182,72,.35);}
+.hero-mini h1{font-size:clamp(1.8rem,4vw,2.4rem);margin:18px 0 10px;}
+.hero-mini p{color:#D8CBB0;max-width:560px;margin:0 auto;line-height:1.6;}
+
+section{padding:50px 0;}
+.group{margin-bottom:34px;}
+.group h2{font-size:1.1rem;display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.group h2 .chip{width:30px;height:30px;border-radius:9px;background:rgba(255,182,72,.16);color:#B97A12;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.tag-list{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 13px;font-size:.86rem;color:var(--slate);box-shadow:var(--shadow-card);}
+
+.note{background:rgba(15,157,140,.08);border:1px solid rgba(15,157,140,.22);border-radius:14px;padding:18px 20px;font-size:.94rem;color:var(--teal);font-weight:600;margin-top:10px;}
+
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:36px;}
+.cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--amber),#E8902A);color:#3a2400;font-weight:700;font-size:.9rem;padding:12px 20px;border-radius:12px;text-decoration:none;box-shadow:0 10px 24px -6px rgba(255,182,72,.5);}
+.cta.dark{background:#1a1a1a;color:#fff;box-shadow:0 10px 24px -6px rgba(0,0,0,.3);}
+.cta.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;}
+
+footer{background:var(--navy);color:#9FB6B2;padding:36px 0;text-align:center;font-size:.82rem;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <a href="../" class="back">← Proyecto Hugo</a>
+    <div class="brand-mini"><span class="dot"></span> Rama VersionAgosto2025</div>
+  </div>
+</div>
+
+<main>
+  <header class="hero-mini">
+    <div class="wrap">
+      <span class="badge">🧪 Versión experimental avanzada</span>
+      <h1>Rama <code>VersionAgosto2025</code></h1>
+      <p>Refleja el avance técnico correspondiente a agosto 2025: una arquitectura más cercana a un instrumento de medición real.</p>
+    </div>
+  </header>
+
+  <section class="wrap">
+    <div class="group">
+      <h2><span class="chip">🖥️</span> Soporte dual de pantallas</h2>
+      <div class="tag-list">
+        <span class="tag">OLED SSD1306 (I2C)</span>
+        <span class="tag">LCD 16x2 I2C</span>
+        <span class="tag">Seleccionables desde el código</span>
+      </div>
+    </div>
+    <div class="group">
+      <h2><span class="chip">📡</span> Medición multiparamétrica</h2>
+      <div class="tag-list">
+        <span class="tag">Conductividad eléctrica</span>
+        <span class="tag">Temperatura (LM35)</span>
+        <span class="tag">pH (módulo analógico)</span>
+      </div>
+    </div>
+    <div class="group">
+      <h2><span class="chip">💧</span> Cálculo de salinidad estimada (g/L)</h2>
+      <div class="tag-list">
+        <span class="tag">Compensación térmica respecto a 25 °C</span>
+        <span class="tag">Factor correctivo por desviación de pH</span>
+      </div>
+    </div>
+    <div class="group">
+      <h2><span class="chip">📐</span> Modelos matemáticos configurables</h2>
+      <div class="tag-list">
+        <span class="tag">Lineal</span><span class="tag">Cuadrático</span><span class="tag">Cúbico</span>
+      </div>
+    </div>
+    <div class="group">
+      <h2><span class="chip">📊</span> Visualización extendida</h2>
+      <div class="tag-list">
+        <span class="tag">Conductividad compensada (mS/cm)</span>
+        <span class="tag">Salinidad estimada (g/L)</span>
+        <span class="tag">Temperatura (°C)</span>
+        <span class="tag">pH aproximado</span>
+      </div>
+    </div>
+    <div class="group">
+      <h2><span class="chip">⚙️</span> Parámetros calibrables</h2>
+      <div class="tag-list">
+        <span class="tag">Coeficientes de las fórmulas</span>
+        <span class="tag">Rango máximo de conductividad</span>
+        <span class="tag">Coeficiente térmico</span>
+        <span class="tag">Factor de corrección por pH</span>
+      </div>
+    </div>
+    <div class="group">
+      <h2><span class="chip">🔘</span> Gestión robusta del botón</h2>
+      <div class="tag-list">
+        <span class="tag">Antirrebote por software</span>
+        <span class="tag">Alternancia medición / pausa sin lecturas erráticas</span>
+      </div>
+    </div>
+    <div class="group">
+      <h2><span class="chip">🔌</span> Salida completa por puerto serie</h2>
+      <div class="tag-list">
+        <span class="tag">ADC crudo</span><span class="tag">Temperatura</span><span class="tag">pH</span>
+        <span class="tag">Conductividad compensada</span><span class="tag">Salinidad estimada</span>
+      </div>
+    </div>
+    <div class="group">
+      <h2><span class="chip">🧬</span> Simulación y validación</h2>
+      <div class="tag-list">
+        <span class="tag">Probado en Wokwi y Tinkercad</span>
+        <span class="tag">Potenciómetros como sensores simulados</span>
+      </div>
+    </div>
+
+    <div class="note">💖 Arquitectura estable, extensible y preparada para integrar fórmulas clínicas reales, nuevos sensores y migración a hardware profesional.</div>
+
+    <div class="cta-row">
+      <a href="https://github.com/paupau77/Proyecto-Hugo-Arduino-Dispositivo-mi-Medidor-de-Salinidad-con-Arduino-UNO/tree/VersionAgosto2025" target="_blank" class="cta dark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        Ver en GitHub
+      </a>
+      <a href="../main/" class="cta ghost">← Ver rama main</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Hecho con 💚 por @Paupau77 · © 2026 Paulina Juich. Todos los derechos reservados.
+</footer>
+
+</body>
+</html>
