@@ -765,6 +765,13 @@ Este proyecto también lleva tu huella, porque detrás de cada idea que se concr
 **Con admiración, gratitud y cariño inmenso: gracias, profe.**
 
 
+**Agradecimiento especial al equipo de pruebas de Proyecto Hugo 🧪💚**
+
+Ningún proyecto científico o tecnológico se construye en soledad. Quiero expresar mi más sincero agradecimiento al equipo de pruebas que se está armando, conformado por 6 personas, entre ellas: Gisela Paleari, María de la Paz Scribano, Boris Beker, entre otros y organizado por el Prof. Sergio Daniel Conde, quienes dedicaron su tiempo, compromiso y predisposición para participar en las pruebas y validaciones de Proyecto Hugo.
+Cada medición, cada observación y cada aporte permitió que este prototipo siguiera creciendo con una base más sólida. Gracias por confiar en esta idea, por colaborar con entusiasmo y por demostrar que la ciencia también se construye desde el trabajo en equipo y la solidaridad.
+Mi agradecimiento también al Prof. Sergio Daniel Conde por impulsar la formación de este equipo, por creer en el proyecto desde sus primeras etapas y por generar espacios donde la investigación, la innovación y el compromiso humano se encuentran. Proyecto Hugo es hoy un poco mejor gracias al esfuerzo y la dedicación de todos ustedes💚.
+
+
 **Agradecimiento especial a la profe María Paula Gonzalez💛**
 
 Queremos reconocer tu inmenso valor como profesora, pero sobre todo como persona. Gracias por ser súper dulce, profundamente humana y por acompañar cada proceso con el corazón. También te agradecemos la invitación a tu comunidad, un espacio donde el aprendizaje se vuelve encuentro y solidaridad. Este proyecto lleva también tu huella💝.
