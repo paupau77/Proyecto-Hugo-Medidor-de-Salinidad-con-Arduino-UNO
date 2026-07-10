@@ -1926,50 +1926,75 @@
   </section>
 
 <section class="wrap" id="documentacion">
-  <div class="sec-head">
-    <span class="eyebrow">📖 Documentación</span>
-    <h2>Documentación Oficial del Proyecto</h2>
-    <p>
-      Toda la documentación técnica del Proyecto Hugo se sincroniza automáticamente
-      con GitHub. Siempre estarás viendo la versión más reciente.
-    </p>
 
-    <p style="margin-top:20px;">
-      <a href="https://github.com/paupau77/Proyecto-Hugo-Medidor-de-Salinidad-con-Arduino-UNO/blob/VersionAgosto2025/README.md"
-         target="_blank"
-         class="cta">
-         Ver documentación en GitHub →
-      </a>
-    </p>
-  </div>
+<div class="sec-head">
+<span class="eyebrow">📚 Documentación</span>
 
-  <details
-      style="
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:20px;
-      box-shadow:var(--shadow-card);
-      overflow:hidden;">
+<h2>Documentación Oficial del Proyecto</h2>
 
-    <summary
-        style="
-        cursor:pointer;
-        padding:24px 30px;
-        font-size:1.1rem;
-        font-weight:700;
-        list-style:none;">
-      📚 Mostrar documentación oficial
-    </summary>
+<p>
+Toda la documentación técnica del Proyecto Hugo se mantiene sincronizada automáticamente con GitHub.
+Siempre estarás consultando la versión más reciente.
+</p>
 
-    <div
-      id="readme"
-      style="
-      padding:30px;
-      border-top:1px solid var(--line);">
-      Cargando documentación...
-    </div>
+<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:25px;">
 
-  </details>
+<span style="padding:8px 16px;border-radius:999px;background:#eaf8f6;color:#0F9D8C;font-weight:600;">
+📄 README Oficial
+</span>
+
+<span style="padding:8px 16px;border-radius:999px;background:#fff5e7;color:#d68900;font-weight:600;">
+🔄 Actualización automática
+</span>
+
+<span style="padding:8px 16px;border-radius:999px;background:#eef5ff;color:#2563eb;font-weight:600;">
+🌿 VersionAgosto2025
+</span>
+
+</div>
+
+<div style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-top:30px;">
+
+<a href="https://github.com/paupau77/Proyecto-Hugo-Medidor-de-Salinidad-con-Arduino-UNO/blob/VersionAgosto2025/README.md"
+target="_blank"
+class="cta">
+
+Ver en GitHub →
+
+</a>
+
+<button
+id="toggleReadme"
+class="cta ghost">
+
+📖 Leer documentación oficial
+
+</button>
+
+</div>
+
+</div>
+
+<div
+id="readmeContainer"
+style="
+display:none;
+margin-top:40px;
+background:var(--card);
+border:1px solid var(--line);
+border-radius:24px;
+padding:40px;
+box-shadow:var(--shadow-card);
+overflow:hidden;
+">
+
+<div id="readme">
+
+Cargando documentación...
+
+</div>
+
+</div>
 
 </section>
 
@@ -2483,6 +2508,40 @@ fetch("https://raw.githubusercontent.com/paupau77/Proyecto-Hugo-Medidor-de-Salin
     console.error(error);
 });
 </script>
+
+<script>
+
+const boton=document.getElementById("toggleReadme");
+const contenedor=document.getElementById("readmeContainer");
+
+boton.addEventListener("click",()=>{
+
+if(contenedor.style.display==="none"){
+
+contenedor.style.display="block";
+
+boton.innerHTML="▲ Ocultar documentación";
+
+}else{
+
+contenedor.style.display="none";
+
+boton.innerHTML="📖 Leer documentación oficial";
+
+}
+
+});
+
+fetch("https://raw.githubusercontent.com/paupau77/Proyecto-Hugo-Medidor-de-Salinidad-con-Arduino-UNO/VersionAgosto2025/README.md")
+.then(r=>r.text())
+.then(md=>{
+
+document.getElementById("readme").innerHTML=marked.parse(md);
+
+});
+
+</script>
+
 </body>
 
 </html>
