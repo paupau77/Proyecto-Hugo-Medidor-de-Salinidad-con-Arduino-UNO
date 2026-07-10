@@ -1666,6 +1666,7 @@
       }
     }
   </style>
+<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
 </head>
 
 <body>
@@ -1923,6 +1924,23 @@
       </div>
     </div>
   </section>
+
+<section class="wrap" id="documentacion">
+  <div class="sec-head">
+    <span class="eyebrow">Documentación</span>
+    <h2>README del proyecto</h2>
+    <p>Esta documentación se sincroniza automáticamente con GitHub.</p>
+  </div>
+
+  <div id="readme"
+       style="background:var(--card);
+              border:1px solid var(--line);
+              border-radius:20px;
+              padding:30px;
+              box-shadow:var(--shadow-card);">
+    Cargando documentación...
+  </div>
+</section>
 
   <!-- VERSIONES -->
   <section class="wrap" id="versiones">
@@ -2422,6 +2440,18 @@
       restart();
     })();
   </script>
+<script>
+fetch("https://raw.githubusercontent.com/paupau77/Proyecto-Hugo-Medidor-de-Salinidad-con-Arduino-UNO/VersionAgosto2025/README.md")
+.then(response => response.text())
+.then(markdown => {
+    document.getElementById("readme").innerHTML = marked.parse(markdown);
+})
+.catch(error => {
+    document.getElementById("readme").innerHTML =
+        "<h3>No se pudo cargar la documentación.</h3>";
+    console.error(error);
+});
+</script>
 </body>
 
 </html>
