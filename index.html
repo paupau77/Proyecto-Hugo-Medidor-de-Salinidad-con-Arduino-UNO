@@ -1665,8 +1665,55 @@
         height: 56px;
       }
     }
+.markdown-body{
+    background:transparent !important;
+    color:inherit !important;
+    max-width:100%;
+    box-sizing:border-box;
+}
+
+.markdown-body img{
+    max-width:100%;
+    height:auto;
+}
+
+.markdown-body table{
+    display:block;
+    overflow-x:auto;
+    width:100%;
+}
+
+.markdown-body pre{
+    overflow-x:auto;
+    border-radius:12px;
+}
+
+.markdown-body{
+    padding:0;
+}
+
+@media(max-width:768px){
+
+.markdown-body{
+    font-size:15px;
+}
+
+.markdown-body h1{
+    font-size:2rem;
+}
+
+.markdown-body h2{
+    font-size:1.6rem;
+}
+
+.markdown-body h3{
+    font-size:1.35rem;
+}
+
+}
   </style>
 <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.min.css">
 </head>
 
 <body>
@@ -1988,11 +2035,11 @@ box-shadow:var(--shadow-card);
 overflow:hidden;
 ">
 
-<div id="readme">
+<article id="readme" class="markdown-body">
 
 Cargando documentación...
 
-</div>
+</article>
 
 </div>
 
