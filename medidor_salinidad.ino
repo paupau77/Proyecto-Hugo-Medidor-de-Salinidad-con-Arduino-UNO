@@ -215,17 +215,14 @@ void mostrarLectura(float voltaje,
   lcd.clear();
 
   lcd.setCursor(0, 0);
-
-  lcd.print("V:");
-  lcd.print(voltaje, 1);
-
-  lcd.print(" C:");
+  lcd.print("C:");
   lcd.print(conductividad, 1);
+  lcd.print("mS");
 
   lcd.setCursor(0, 1);
-
   lcd.print("S:");
   lcd.print(salinidad, 1);
+  lcd.print("g/L");
 
   lcd.print(" T:");
   lcd.print(temperatura, 0);
