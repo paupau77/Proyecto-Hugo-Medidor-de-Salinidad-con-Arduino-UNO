@@ -270,15 +270,80 @@ El sistema realiza un proceso de medición, compensación y visualización de da
 ---
 
 ### 🔘 Control mediante botón
-- Un **pulsador** permite controlar el estado del sistema:
-  - **Pulsación corta**: alterna entre **medición activa** y **pausa**
-- En modo pausa:
-  - Se detiene la actualización de datos
-  - Se muestra un mensaje indicándolo en la pantalla
+
+El sistema incorpora un pulsador conectado al pin digital **D2** utilizando la configuración `INPUT_PULLUP` y un algoritmo de **antirrebote por software**.
+
+Cada pulsación alterna entre dos estados:
+
+- **Encendido**
+  - Activa la retroiluminación del LCD.
+  - Muestra el mensaje `Iniciando...`.
+  - Reanuda las mediciones periódicas.
+  - Continúa utilizando los últimos valores filtrados.
+
+- **Apagado**
+  - Muestra el mensaje `Apagando...`.
+  - Apaga la retroiluminación del LCD.
+  - Detiene completamente las mediciones.
+  - Conserva los valores internos para evitar reinicios bruscos.
+
+Este comportamiento simula el funcionamiento básico de un instrumento electrónico de medición, proporcionando una interfaz de usuario más natural.
 
 ---
 
 > ℹ️ El sistema está diseñado de forma modular, permitiendo reemplazar sensores simulados por sensores reales sin modificar la estructura principal del código.
+
+---
+
+## ✅ Validación de sensores
+
+El software incorpora validaciones para detectar lecturas fuera de rango antes de procesarlas.
+
+### Temperatura (LM35)
+
+Se considera inválida cuando:
+
+- Voltaje menor a 0.01 V
+- Voltaje mayor a 4.99 V
+- Temperatura menor a -5 °C
+- Temperatura mayor a 70 °C
+
+### Sensor de pH
+
+La lectura es descartada cuando:
+
+- Voltaje menor a 0.1 V
+- Voltaje mayor a 4.9 V
+
+Además, el resultado final queda limitado entre:
+
+- pH mínimo: 0
+- pH máximo: 14
+
+### Conductividad
+
+La lectura solamente se utiliza si se encuentra dentro del rango configurado mediante:
+
+```cpp
+maxConductividad
+```
+
+---
+
+
+---
+
+## 🌊 Filtro exponencial
+
+Para reducir el ruido propio de las mediciones analógicas se utiliza un filtro exponencial (EMA - Exponential Moving Average).
+
+La ecuación implementada es:
+
+```cpp
+valorFiltrado =
+alpha * nuevaLectura +
+(1-alpha) * lecturaAnterior;
+```
 
 ---
 
@@ -301,6 +366,15 @@ El sistema realiza un proceso de medición, compensación y visualización de da
 // Ejemplo:
 // float salinidad = a * pow(condensidad, 2) + b * conductividad + c;
 ```
+NUEVO: 
+- Implementa validación automática de sensores para descartar mediciones inválidas.
+- Inicializa valores seguros durante el arranque del sistema.
+- Conserva el último valor válido mediante filtro exponencial.
+- Incluye calibración configurable para el sensor de pH mediante:
+  - Voltaje de referencia para pH 7
+  - Pendiente calibrable
+- Implementa encendido y apagado del dispositivo mediante botón con control de la retroiluminación del LCD.
+- Actualiza la pantalla sin producir parpadeos gracias al uso de posiciones fijas del cursor.
 
 ---
 
@@ -308,6 +382,21 @@ El sistema realiza un proceso de medición, compensación y visualización de da
 ## 🧠 Funcionamiento del código (actualizado)
 
 ---
+
+## ⚙️ Características principales del software
+
+- Lectura periódica mediante `millis()` sin bloquear la ejecución.
+- Filtrado exponencial para reducir ruido.
+- Compensación automática de temperatura.
+- Calibración configurable del sensor de pH.
+- Validación automática de datos fuera de rango.
+- Selección entre tres modelos matemáticos de salinidad.
+- Pantalla LCD optimizada para evitar parpadeos.
+- Comunicación serie para monitoreo y calibración.
+- Encendido y apagado mediante pulsador con antirrebote por software.
+- Código completamente modular para facilitar futuras ampliaciones.
+
+  ---
 
 ## 💻 1. Librerías y creación del objeto LCD
 
@@ -462,14 +551,20 @@ En la pantalla se visualiza:
 
 ---
 
-##  🧪 Estado actual
+## 🧪 Estado actual
 
-- ✅ Funciona correctamente en simuladores (Tinkercad, Wokwi).  
-- ✅ Mide valores analógicos simulados por potenciómetro.  
-- ✅ Muestra datos correctamente en pantalla LCD.  
-- ✅ Permite pausar y reanudar mediciones con botón.  
-- 🕐 A la espera de integración de fórmula profesional para conversión precisa a salinidad.
-(La conversión a Salinidad usa fórmulas de ejemplo (lineal, cuadrática o cúbica) que, si bien son flexibles, deben ser reemplazadas por una ecuación verificada químicamente.)  
+- ✅ Funcionamiento validado en hardware y simuladores.
+- ✅ Lectura de conductividad.
+- ✅ Lectura de temperatura LM35.
+- ✅ Lectura de pH analógico.
+- ✅ Compensación automática por temperatura.
+- ✅ Calibración configurable para pH.
+- ✅ Filtro exponencial para las tres variables.
+- ✅ Validación automática de lecturas fuera de rango.
+- ✅ Encendido y apagado mediante pulsador.
+- ✅ Pantalla LCD sin parpadeos.
+- ✅ Comunicación serie para depuración y calibración.
+- 🕐 Pendiente de calibración experimental con soluciones patrón para obtener coeficientes reales de salinidad.
 
 ---
 
@@ -531,6 +626,18 @@ Esta rama refleja el avance técnico correspondiente a **Agosto 2025**, incorpor
   - Añadir nuevos sensores
   - Migrar a hardware profesional
 
+### Mejoras incorporadas en la versión final
+
+- Encendido y apagado del instrumento mediante pulsador.
+- Retroiluminación del LCD controlada por software.
+- Inicialización segura de todas las variables del sistema.
+- Validación de sensores antes del filtrado.
+- Conservación del último valor válido cuando una lectura resulta inválida.
+- Calibración completa del sensor de pH mediante buffers.
+- Monitor serie ampliado para tareas de depuración y ajuste.
+- Actualización del LCD sin parpadeos.
+- Arquitectura modular preparada para futuras calibraciones profesionales.
+
 ---
 
 ### 📟 Ejemplo de visualización en pantalla (LCD u OLED)
@@ -580,8 +687,9 @@ if (tipoFormula == 1) {
 
 ### Estado de Validación
 - Funcionamiento correcto en Wokwi y Tinkercad  
-- Arquitectura estable y extensible  
----
+- Arquitectura estable y extensible
+
+  ---
 
 ##  🚀 Posibles mejoras futuras
 
