@@ -52,9 +52,8 @@ float a3 = 0.001, b3 = -0.02, c3 = 0.5, d3 = 0.6;
 int tipoFormula = 3;   // 1=Lineal, 2=Cuadrática, 3=Cúbica
 
 // ================= ESTADO =================
-bool medirActivo = true;
+bool medirActivo = true;          // Inicia encendido
 bool botonPresionado = false;
-bool pantallaMostrada = false;
 unsigned long ultimaLectura = 0;
 const unsigned long intervaloLectura = 300; // ms
 
@@ -107,6 +106,7 @@ void setup() {
 void loop() {
   leerBoton();
 
+  // Solo medir si el dispositivo está encendido
   if (medirActivo && (millis() - ultimaLectura >= intervaloLectura)) {
     // --- Lectura de sensores (una sola vez por sensor) ---
     float tempRaw = leerTemperatura();
@@ -153,7 +153,7 @@ void loop() {
         break;
     }
 
-    // --- Mostrar ---
+    // --- Mostrar en LCD ---
     mostrarLectura(conductividad, salinidad, tempFiltrada, pHFiltrado);
 
     // --- Monitor serie completo ---
@@ -169,19 +169,6 @@ void loop() {
     else Serial.println("---");
 
     ultimaLectura = millis();
-  }
-
-  // --- Pausa ---
-  if (!medirActivo) {
-    if (!pantallaMostrada) {
-      lcd.setCursor(0, 0);
-      lcd.print("== PAUSADO ==   ");
-      lcd.setCursor(0, 1);
-      lcd.print("Presiona boton  ");
-      pantallaMostrada = true;
-    }
-  } else {
-    pantallaMostrada = false;
   }
 }
 
@@ -218,19 +205,40 @@ float aplicarFiltro(float nueva, float anterior, float alpha) {
 }
 
 //==================================================
-// LECTURA DEL BOTÓN CON ANTI-REBOTE
+// LECTURA DEL BOTÓN CON ANTI-REBOTE Y ENCENDIDO/APAGADO
 void leerBoton() {
   static unsigned long ultimoCambio = 0;
   const unsigned long debounce = 50;
+
   bool estado = digitalRead(buttonPin) == LOW;
 
   if (estado && !botonPresionado && millis() - ultimoCambio > debounce) {
     botonPresionado = true;
     medirActivo = !medirActivo;
-    Serial.println(medirActivo ? "MIDIENDO" : "PAUSADO");
-    lcd.clear();
+
+    if (medirActivo) {
+      // Encendido
+      lcd.backlight();
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Iniciando...");
+      delay(1000);
+      lcd.clear();
+      Serial.println("ENCENDIDO");
+    } else {
+      // Apagado
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Apagando...");
+      delay(1000);
+      lcd.clear();
+      lcd.noBacklight();
+      Serial.println("APAGADO");
+    }
+
     ultimoCambio = millis();
   }
+
   if (!estado && botonPresionado) {
     botonPresionado = false;
     ultimoCambio = millis();
